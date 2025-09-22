@@ -569,7 +569,7 @@ export default function MateriaLab() {
                   contato@amostraa.com
                 </button>
               </li>
-              <li>+55 11 0000-0000</li>
+              <li>+55 47 99212-2218</li>
               <li>São Paulo, SP</li>
             </ul>
           </div>
