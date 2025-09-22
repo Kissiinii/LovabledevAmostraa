@@ -8,6 +8,7 @@ import { ChevronRight, Search, Leaf, Ruler, Truck, Star, Menu, X } from "lucide-
 import { MaterialCard } from "@/components/MaterialCard";
 import { FilterButton } from "@/components/FilterButton";
 import { useMaterialSearch } from "@/hooks/useMaterialSearch";
+import { Logo } from "@/components/Logo";
 import { materials, collections, filterOptions } from "@/data/materials";
 import { toast } from "@/hooks/use-toast";
 
