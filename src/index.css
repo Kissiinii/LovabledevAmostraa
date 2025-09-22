@@ -48,6 +48,51 @@
 
     --radius: 0.5rem;
 
+    /* Estilos para a logo */
+.logo-container {
+  transition: transform 0.2s ease-in-out;
+}
+
+.logo-container:hover {
+  transform: scale(1.05);
+}
+
+/* Estilos do header */
+.header-glass {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Cores personalizadas da marca Amostra */
+.text-amostra-orange {
+  color: #ff8c00;
+}
+
+.bg-amostra-orange {
+  background-color: #ff8c00;
+}
+
+.hover\:bg-amostra-orange:hover {
+  background-color: #e67e00;
+}
+
+/* Responsividade da logo */
+@media (max-width: 640px) {
+  .logo-container img {
+    height: 2rem;
+    max-width: 120px;
+  }
+}
+
+@media (min-width: 641px) {
+  .logo-container img {
+    height: 2.5rem;
+    max-width: 160px;
+  }
+}
+
+
     /* MateriaLab Material Textures */
     --texture-madeira: url("Lovabledev/Public/textures/verde-guatemala.jpg");
     --texture-concreto: radial-gradient(circle at 30% 30%, hsl(209 8% 78%), transparent 60%), linear-gradient(180deg, hsl(209 9% 75%), hsl(210 4% 60%));
