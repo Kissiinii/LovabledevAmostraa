@@ -116,7 +116,7 @@ export default function MateriaLab() {
               </Button>
             )}
             
-            <Button className="rounded-2xl" onClick={() => navigate('/login')}>
+            <Button className="rounded-2xl bg-orange-500 hover:bg-orange-600" onClick={() => navigate('/login')}>
               Entrar
             </Button>
             
@@ -232,7 +232,7 @@ export default function MateriaLab() {
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <Button 
                 size="lg" 
-                className="rounded-2xl gap-2"
+                className="rounded-2xl gap-2 bg-orange-500 hover:bg-orange-600"
                 onClick={() => {
                   scrollToSection('colecoes');
                   toast({
