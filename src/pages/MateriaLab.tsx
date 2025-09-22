@@ -79,7 +79,7 @@ export default function MateriaLab() {
         <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="h-9 w-9 rounded-xl bg-primary text-primary-foreground grid place-items-center font-semibold">M</div>
-            <span className="font-semibold tracking-tight">MateriaLab</span>
+            <span className="font-semibold tracking-tight">Amostraa</span>
           </div>
           
           <nav className="hidden md:flex items-center gap-6 text-sm">
@@ -493,7 +493,7 @@ export default function MateriaLab() {
           <div>
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-xl bg-primary text-primary-foreground grid place-items-center font-semibold">M</div>
-              <span className="font-semibold text-foreground">MateriaLab</span>
+              <span className="font-semibold text-foreground">Amostraa</span>
             </div>
             <p className="mt-3">Plataforma de amostras e especificações para arquitetura e interiores.</p>
           </div>
@@ -562,11 +562,11 @@ export default function MateriaLab() {
                 <button 
                   className="hover:text-foreground transition"
                   onClick={() => {
-                    navigator.clipboard.writeText('contato@materialab.com');
-                    toast({ title: "Email copiado!", description: "contato@materialab.com" });
+                    navigator.clipboard.writeText('contato@amostraa.com');
+                    toast({ title: "Email copiado!", description: "contato@amostraa.com" });
                   }}
                 >
-                  contato@materialab.com
+                  contato@amostraa.com
                 </button>
               </li>
               <li>+55 11 0000-0000</li>
