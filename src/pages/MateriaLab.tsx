@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,6 +12,7 @@ import { materials, collections, filterOptions } from "@/data/materials";
 import { toast } from "@/hooks/use-toast";
 
 export default function MateriaLab() {
+  const navigate = useNavigate();
   const [requestedSamples, setRequestedSamples] = useState<Array<{ name: string; code: string }>>([]);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showSampleKit, setShowSampleKit] = useState(false);
@@ -116,7 +118,7 @@ export default function MateriaLab() {
               </Button>
             )}
             
-            <Button className="rounded-2xl" onClick={() => toast({ title: "Login", description: "Funcionalidade de login será implementada." })}>
+            <Button className="rounded-2xl" onClick={() => navigate('/login')}>
               Entrar
             </Button>
             
