@@ -75,96 +75,63 @@ export default function MateriaLab() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Header */}
-      <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-b border-border">
-        <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-xl bg-primary text-primary-foreground grid place-items-center font-semibold">M</div>
-            <span className="font-semibold tracking-tight">Amostraa</span>
-          </div>
-          
-          <nav className="hidden md:flex items-center gap-6 text-sm">
-            <button className="hover:text-muted-foreground transition" onClick={() => scrollToSection('colecoes')}>
-              Coleções
-            </button>
-            <button className="hover:text-muted-foreground transition" onClick={() => scrollToSection('como-funciona')}>
-              Como funciona
-            </button>
-            <button className="hover:text-muted-foreground transition" onClick={() => scrollToSection('sobre')}>
-              Sobre
-            </button>
-          </nav>
+      {/* Header com nova logo */}
+<motion.header 
+  className="fixed top-0 w-full bg-white/95 backdrop-blur-sm z-50 border-b border-gray-100"
+  initial={{ y: -100 }}
+  animate={{ y: 0 }}
+  transition={{ duration: 0.5 }}
+>
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="flex items-center justify-between h-16">
+      {/* Logo */}
+      <Logo 
+        onClick={() => navigate('/')} 
+        className="flex-shrink-0"
+      />
+      
+      {/* Navigation */}
+      <nav className="hidden md:flex items-center space-x-8">
+        <Button 
+          variant="ghost" 
+          onClick={() => scrollToSection('materiais')}
+          className="text-gray-700 hover:text-orange-500"
+        >
+          Materiais
+        </Button>
+        <Button 
+          variant="ghost" 
+          onClick={() => scrollToSection('colecoes')}
+          className="text-gray-700 hover:text-orange-500"
+        >
+          Coleções
+        </Button>
+        <Button 
+          variant="ghost" 
+          onClick={() => scrollToSection('como-funciona')}
+          className="text-gray-700 hover:text-orange-500"
+        >
+          Como funciona
+        </Button>
+        <Button 
+          onClick={() => navigate('/login')}
+          className="bg-orange-500 hover:bg-orange-600 text-white"
+        >
+          Entrar
+        </Button>
+      </nav>
 
-          <div className="flex items-center gap-2">
-            <div className="hidden md:flex items-center gap-2">
-              <Input 
-                className="w-56" 
-                placeholder="Buscar materiais" 
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              />
-              <Button variant="secondary" className="gap-2" onClick={handleSearch}>
-                <Search className="h-4 w-4"/>Buscar
-              </Button>
-            </div>
-            
-            {requestedSamples.length > 0 && (
-              <Button 
-                variant="outline" 
-                className="gap-2"
-                onClick={() => setShowSampleKit(!showSampleKit)}
-              >
-                Kit ({requestedSamples.length})
-              </Button>
-            )}
-            
-            <Button className="rounded-2xl" onClick={() => navigate('/login')}>
-              Entrar
-            </Button>
-            
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="md:hidden"
-              onClick={() => setShowMobileMenu(!showMobileMenu)}
-            >
-              {showMobileMenu ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-            </Button>
-          </div>
-        </div>
+      {/* Mobile menu button */}
+      <button
+        className="md:hidden p-2"
+        onClick={() => setShowMobileMenu(!showMobileMenu)}
+      >
+        {showMobileMenu ? <X size={24} /> : <Menu size={24} />}
+      </button>
+    </div>
+  </div>
+</motion.header>
 
-        {/* Mobile Menu */}
-        {showMobileMenu && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="md:hidden border-t border-border bg-background p-4"
-          >
-            <nav className="flex flex-col gap-3">
-              <button className="text-left hover:text-muted-foreground" onClick={() => scrollToSection('colecoes')}>
-                Coleções
-              </button>
-              <button className="text-left hover:text-muted-foreground" onClick={() => scrollToSection('como-funciona')}>
-                Como funciona
-              </button>
-              <button className="text-left hover:text-muted-foreground" onClick={() => scrollToSection('sobre')}>
-                Sobre
-              </button>
-              <div className="flex gap-2 mt-2">
-                <Input 
-                  placeholder="Buscar materiais" 
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="flex-1"
-                />
-                <Button size="sm" onClick={handleSearch}>
-                  <Search className="h-4 w-4"/>
-                </Button>
-              </div>
-            </nav>
-          </motion.div>
-        )}
 
         {/* Sample Kit Panel */}
         {showSampleKit && (
