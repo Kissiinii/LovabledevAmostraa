@@ -7,14 +7,13 @@ import { Input } from "@/components/ui/input";
 import { ChevronRight, Search, Leaf, Ruler, Truck, Star, Menu, X } from "lucide-react";
 import { MaterialCard } from "@/components/MaterialCard";
 import { FilterButton } from "@/components/FilterButton";
-import { Logo } from "@/components/Logo";
 import { useMaterialSearch } from "@/hooks/useMaterialSearch";
 import { materials, collections, filterOptions } from "@/data/materials";
 import { toast } from "@/hooks/use-toast";
 
 export default function MateriaLab() {
   const navigate = useNavigate();
-  const [requestedSamples, setRequestedSamples] = useState<{name: string; code: string}[]>([]);
+  const [requestedSamples, setRequestedSamples] = useState<Array<{ name: string; code: string }>>([]);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showSampleKit, setShowSampleKit] = useState(false);
 
@@ -74,423 +73,505 @@ export default function MateriaLab() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <motion.header 
-        className="fixed top-0 w-full bg-white/95 backdrop-blur-sm z-50 border-b border-gray-100"
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Logo 
-              onClick={() => navigate('/')} 
-              className="flex-shrink-0"
-            />
-            
-            {/* Navigation Desktop */}
-            <nav className="hidden md:flex items-center space-x-8">
-              <Button 
-                variant="ghost" 
-                onClick={() => scrollToSection('materiais')}
-                className="text-gray-700 hover:text-orange-500"
-              >
-                Materiais
-              </Button>
-              <Button 
-                variant="ghost" 
-                onClick={() => scrollToSection('colecoes')}
-                className="text-gray-700 hover:text-orange-500"
-              >
-                Coleções
-              </Button>
-              <Button 
-                variant="ghost" 
-                onClick={() => scrollToSection('como-funciona')}
-                className="text-gray-700 hover:text-orange-500"
-              >
-                Como funciona
-              </Button>
-              <Button 
-                onClick={() => navigate('/login')}
-                className="bg-orange-500 hover:bg-orange-600 text-white"
-              >
-                Entrar
-              </Button>
-            </nav>
-
-            {/* Mobile menu button */}
-            <button
-              className="md:hidden p-2"
-              onClick={() => setShowMobileMenu(!showMobileMenu)}
-            >
-              {showMobileMenu ? <X size={24} /> : <Menu size={24} />}
-            </button>
+      <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-b border-border">
+        <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 rounded-xl bg-primary text-primary-foreground grid place-items-center font-semibold">M</div>
+            <span className="font-semibold tracking-tight">Amostraa</span>
           </div>
+          
+          <nav className="hidden md:flex items-center gap-6 text-sm">
+            <button className="hover:text-muted-foreground transition" onClick={() => scrollToSection('colecoes')}>
+              Coleções
+            </button>
+            <button className="hover:text-muted-foreground transition" onClick={() => scrollToSection('como-funciona')}>
+              Como funciona
+            </button>
+            <button className="hover:text-muted-foreground transition" onClick={() => scrollToSection('sobre')}>
+              Sobre
+            </button>
+          </nav>
 
-          {/* Mobile menu */}
-          {showMobileMenu && (
-            <motion.div 
-              className="md:hidden py-4 border-t border-gray-100"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-            >
-              <div className="flex flex-col space-y-4">
-                <Button 
-                  variant="ghost" 
-                  onClick={() => scrollToSection('materiais')}
-                  className="text-left justify-start"
-                >
-                  Materiais
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  onClick={() => scrollToSection('colecoes')}
-                  className="text-left justify-start"
-                >
-                  Coleções
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  onClick={() => scrollToSection('como-funciona')}
-                  className="text-left justify-start"
-                >
-                  Como funciona
-                </Button>
-                <Button 
-                  onClick={() => navigate('/login')}
-                  className="bg-orange-500 hover:bg-orange-600 text-white"
-                >
-                  Entrar
-                </Button>
-              </div>
-            </motion.div>
-          )}
-        </div>
-      </motion.header>
-
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-orange-50 overflow-hidden pt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <motion.div 
-            className="text-center max-w-4xl mx-auto"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <motion.div 
-              className="inline-flex items-center px-4 py-2 bg-green-100 rounded-full text-sm font-medium text-green-800 mb-8"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              <Leaf size={16} className="mr-2" />
-              Coleções com opção de baixo impacto
-            </motion.div>
-            
-            <motion.h1 
-              className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              Amostras materiais, decisões precisas.
-            </motion.h1>
-
-            <motion.p 
-              className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-            >
-              A plataforma onde arquitetos exploram, comparam e <strong>solicitam amostras</strong> de materiais com curadoria técnica.
-            </motion.p>
-
-            <motion.div 
-              className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-            >
-              <Button 
-                size="lg" 
-                className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3"
-                onClick={() => scrollToSection('materiais')}
-              >
-                Explorar materiais
-                <ChevronRight className="ml-2" size={20} />
+          <div className="flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-2">
+              <Input 
+                className="w-56" 
+                placeholder="Buscar materiais" 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              />
+              <Button variant="secondary" className="gap-2" onClick={handleSearch}>
+                <Search className="h-4 w-4"/>Buscar
               </Button>
+            </div>
+            
+            {requestedSamples.length > 0 && (
               <Button 
                 variant="outline" 
-                size="lg" 
-                className="border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-3"
-                onClick={() => scrollToSection('como-funciona')}
+                className="gap-2"
+                onClick={() => setShowSampleKit(!showSampleKit)}
               >
-                Como funciona
+                Kit ({requestedSamples.length})
               </Button>
-            </motion.div>
-
-            <motion.div 
-              className="flex flex-wrap justify-center gap-6 text-sm text-gray-500"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
+            )}
+            
+            <Button className="rounded-2xl" onClick={() => navigate('/login')}>
+              Entrar
+            </Button>
+            
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="md:hidden"
+              onClick={() => setShowMobileMenu(!showMobileMenu)}
             >
-              <div className="flex items-center">
-                <Ruler className="mr-2" size={16} />
-                Fichas técnicas
+              {showMobileMenu ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </Button>
+          </div>
+        </div>
+
+        {/* Mobile Menu */}
+        {showMobileMenu && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="md:hidden border-t border-border bg-background p-4"
+          >
+            <nav className="flex flex-col gap-3">
+              <button className="text-left hover:text-muted-foreground" onClick={() => scrollToSection('colecoes')}>
+                Coleções
+              </button>
+              <button className="text-left hover:text-muted-foreground" onClick={() => scrollToSection('como-funciona')}>
+                Como funciona
+              </button>
+              <button className="text-left hover:text-muted-foreground" onClick={() => scrollToSection('sobre')}>
+                Sobre
+              </button>
+              <div className="flex gap-2 mt-2">
+                <Input 
+                  placeholder="Buscar materiais" 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="flex-1"
+                />
+                <Button size="sm" onClick={handleSearch}>
+                  <Search className="h-4 w-4"/>
+                </Button>
               </div>
-              <div className="flex items-center">
-                <Truck className="mr-2" size={16} />
-                Entrega em até 72h
-              </div>
-              <div className="flex items-center">
-                <Star className="mr-2" size={16} />
-                Curadoria independente
-              </div>
-            </motion.div>
+            </nav>
           </motion.div>
+        )}
+
+        {/* Sample Kit Panel */}
+        {showSampleKit && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="border-t border-border bg-card p-4"
+          >
+            <h3 className="font-medium mb-3">Seu Kit de Amostras</h3>
+            {requestedSamples.length > 0 ? (
+              <div className="space-y-2">
+                {requestedSamples.map(sample => (
+                  <div key={sample.code} className="flex items-center justify-between text-sm">
+                    <span>{sample.name} ({sample.code})</span>
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      onClick={() => handleRemoveSample(sample.code)}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))}
+                <div className="flex gap-2 pt-2">
+                  <Button 
+                    size="sm" 
+                    className="flex-1"
+                    onClick={() => {
+                      toast({
+                        title: "Kit enviado!",
+                        description: `${requestedSamples.length} amostras serão entregues em 48-72h.`,
+                      });
+                      setRequestedSamples([]);
+                      setShowSampleKit(false);
+                    }}
+                  >
+                    Finalizar pedido
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => setRequestedSamples([])}
+                  >
+                    Limpar
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <p className="text-muted-foreground text-sm">Nenhuma amostra selecionada</p>
+            )}
+          </motion.div>
+        )}
+      </header>
+
+      {/* Hero Section */}
+      <section className="relative overflow-hidden">
+        <div className="mx-auto max-w-7xl px-4 py-16 grid md:grid-cols-2 gap-10 items-center">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-xs mb-4 bg-accent/20">
+              <Leaf className="h-3.5 w-3.5 text-green-600"/> Coleções com opção de baixo impacto
+            </div>
+            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight leading-tight">
+              Amostras materiais, decisões <span className="underline decoration-2 decoration-muted">precisas</span>.
+            </h1>
+            <p className="mt-4 text-muted-foreground text-lg">
+              A plataforma onde arquitetos exploram, comparam e <strong>solicitam amostras</strong> de materiais com curadoria técnica.
+            </p>
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <Button 
+                size="lg" 
+                className="rounded-2xl gap-2"
+                onClick={() => {
+                  scrollToSection('colecoes');
+                  toast({
+                    title: "Explore nossas coleções",
+                    description: "Encontre os materiais ideais para seu projeto.",
+                  });
+                }}
+              >
+                Solicitar amostras <ChevronRight className="h-4 w-4"/>
+              </Button>
+              <Button 
+                size="lg" 
+                variant="secondary" 
+                className="rounded-2xl"
+                onClick={() => {
+                  scrollToSection('colecoes');
+                  toast({
+                    title: "Catálogos disponíveis",
+                    description: "Veja nossos catálogos completos de materiais.",
+                  });
+                }}
+              >
+                Ver catálogos
+              </Button>
+            </div>
+            <div className="mt-6 flex items-center gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-1"><Ruler className="h-4 w-4"/> Fichas técnicas</div>
+              <div className="flex items-center gap-1"><Truck className="h-4 w-4"/> Entrega em até 72h</div>
+              <div className="flex items-center gap-1"><Star className="h-4 w-4"/> Curadoria independente</div>
+            </div>
+          </div>
+
+          {/* Animated Material Samples */}
+          <div className="relative">
+            <div className="absolute -inset-8 -z-10 bg-gradient-to-br from-accent/10 to-background"/>
+            <div className="rounded-3xl border border-border p-4 shadow-sm bg-card">
+              <motion.div
+                className="overflow-hidden rounded-2xl"
+                initial={{ maskPosition: "0% 0%" }}
+                animate={{ maskPosition: ["0% 0%", "100% 0%"] }}
+                transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+                style={{ 
+                  WebkitMaskImage: "linear-gradient(90deg, transparent, black 15%, black 85%, transparent)", 
+                  WebkitMaskSize: "200% 100%" 
+                }}
+              >
+                <div className="grid grid-rows-2 gap-3">
+                  {[0,1].map((row) => (
+                    <motion.div
+                      key={row}
+                      className="flex gap-3"
+                      initial={{ x: row ? 0 : -200 }}
+                      animate={{ x: row ? [-200, 0] : [0, -200] }}
+                      transition={{ duration: 16, repeat: Infinity, ease: "linear" }}
+                    >
+                      {materials.concat(materials).map((material, i) => (
+                        <div key={`${row}-${i}`} className="w-40 h-40 rounded-2xl border border-border overflow-hidden shadow-sm bg-card">
+                          <div className={`h-3/4 ${material.texture}`} />
+                          <div className="h-1/4 p-2 text-xs">
+                            <div className="font-medium truncate">{material.name}</div>
+                            <div className="text-muted-foreground">{material.code}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Search and Filters Section */}
-      <section id="materiais" className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Explore nosso catálogo
-            </h2>
-            <div className="max-w-2xl mx-auto flex gap-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                <Input
-                  type="text"
-                  placeholder="Buscar materiais, códigos ou categorias..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 h-12"
-                />
-              </div>
-              <Button 
-                onClick={handleSearch}
-                className="bg-orange-500 hover:bg-orange-600 text-white px-6 h-12"
-              >
-                Buscar
-              </Button>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap justify-center gap-3 mb-8">
-            {filterOptions.map((filter) => (
-              <FilterButton
-                key={filter}
-                label={filter}
-                isActive={activeFilters.includes(filter)}
-                onClick={() => toggleFilter(filter)}
-              />
-            ))}
-          </div>
-
-          {activeFilters.length > 0 && (
-            <div className="mb-16">
-              <h3 className="text-2xl font-semibold text-gray-900 mb-6">
-                Materiais filtrados ({filteredMaterials.length})
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {filteredMaterials.map((material) => (
-                  <MaterialCard
-                    key={material.code}
-                    name={material.name}
-                    code={material.code}
-                    texture={material.texture}
-                    onSampleRequest={handleSampleRequest}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
+      {/* Filters Section */}
+      <section className="mx-auto max-w-7xl px-4 pb-8">
+        <div className="flex flex-wrap gap-2">
+          {filterOptions.map((filter) => (
+            <FilterButton
+              key={filter}
+              label={filter}
+              isActive={activeFilters.includes(filter)}
+              onClick={() => toggleFilter(filter)}
+            />
+          ))}
         </div>
+        
+        {activeFilters.length > 0 && (
+          <div className="mt-4">
+            <h3 className="text-lg font-medium mb-3">
+              Materiais filtrados ({filteredMaterials.length})
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {filteredMaterials.map((material) => (
+                <MaterialCard
+                  key={material.code}
+                  name={material.name}
+                  code={material.code}
+                  texture={material.texture}
+                  onSampleRequest={handleSampleRequest}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </section>
 
       {/* Collections Section */}
-      <section id="colecoes" className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
-            className="text-center mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
+      <section id="colecoes" className="mx-auto max-w-7xl px-4 pt-10">
+        <div className="flex items-end justify-between mb-4">
+          <h2 className="text-2xl font-semibold tracking-tight">Coleções em destaque</h2>
+          <Button 
+            variant="link" 
+            className="gap-2"
+            onClick={() => toast({ 
+              title: "Todas as coleções", 
+              description: "Navegação para página completa de coleções." 
+            })}
           >
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Coleções em destaque
-            </h2>
-            <p className="text-lg text-gray-600">
-              Seleções curadas para diferentes tipos de projetos
-            </p>
-          </motion.div>
+            Ver todas <ChevronRight className="h-4 w-4"/>
+          </Button>
+        </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {collections.map((collection) => (
-              <motion.div
-                key={collection.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                viewport={{ once: true }}
-              >
-                <Card className="h-full hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <CardTitle className="text-xl">{collection.title}</CardTitle>
-                    <p className="text-gray-600">{collection.description}</p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-3 gap-2 mb-4">
-                      {collection.materials.map((material, i) => (
-                        <div
-                          key={i}
-                          className={`aspect-square rounded-lg ${material.texture} opacity-80`}
-                        />
-                      ))}
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-500">
-                        {collection.materialCount} materiais
-                      </span>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleExploreCollection(collection.id)}
-                      >
-                        Explorar
-                        <ChevronRight size={16} className="ml-1" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
+        <div className="grid md:grid-cols-3 gap-6">
+          {collections.map((collection) => (
+            <Card key={collection.id} className="rounded-3xl shadow-sm border-border">
+              <CardHeader>
+                <CardTitle className="text-lg">{collection.title}</CardTitle>
+                <p className="text-sm text-muted-foreground">{collection.description}</p>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-3 gap-2">
+                  {collection.materials.map((material, i) => (
+                    <div key={i} className={`h-20 rounded-xl border border-border ${material.texture}`}/>
+                  ))}
+                </div>
+                <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
+                  <span>{collection.materialCount} materiais</span>
+                  <Button 
+                    variant="secondary" 
+                    size="sm" 
+                    className="rounded-xl"
+                    onClick={() => handleExploreCollection(collection.id)}
+                  >
+                    Explorar
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </section>
 
       {/* How it Works Section */}
-      <section id="como-funciona" className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
-            Como funciona
-          </h2>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {[{
-              icon: <Search size={40} />,
-              title: "Pesquise e compare",
-              desc: "Filtros por aplicação, acabamento, desempenho e pegada ambiental.",
-              action: () => {
-                const searchInput = document.querySelector('input[placeholder*="Buscar"]') as HTMLInputElement;
-                if (searchInput) {
-                  searchInput.focus();
-                  toast({
-                    title: "Use a busca",
-                    description: "Digite o nome ou categoria do material que procura.",
-                  });
-                }
-              }
-            },{
-              icon: <Ruler size={40} />,
-              title: "Veja a ficha técnica",
-              desc: "Normas, especificações, amostras reais e alternativas compatíveis.",
-              action: () => toast({
-                title: "Fichas técnicas",
-                description: "Acesse informações completas sobre cada material.",
-              })
-            },{
-              icon: <Truck size={40} />,
-              title: "Solicite amostras",
-              desc: "Monte um kit e receba em 48–72h com rastreio.",
-              action: () => {
-                scrollToSection('colecoes');
+      <section id="como-funciona" className="mx-auto max-w-7xl px-4 py-14">
+        <h2 className="text-2xl font-semibold tracking-tight mb-6">Como funciona</h2>
+        <div className="grid md:grid-cols-3 gap-6">
+          {[{
+            icon: <Search className="h-5 w-5"/>,
+            title: "Pesquise e compare",
+            desc: "Filtros por aplicação, acabamento, desempenho e pegada ambiental.",
+            action: () => {
+              const searchInput = document.querySelector('input[placeholder="Buscar materiais"]') as HTMLInputElement;
+              if (searchInput) {
+                searchInput.focus();
                 toast({
-                  title: "Solicite amostras",
-                  description: "Clique nos materiais para adicionar ao seu kit.",
+                  title: "Use a busca",
+                  description: "Digite o nome ou categoria do material que procura.",
                 });
               }
-            }].map((step, i) => (
-              <motion.div
-                key={i}
-                className="text-center group"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: i * 0.1 }}
-                viewport={{ once: true }}
+            }
+          },{
+            icon: <Ruler className="h-5 w-5"/>,
+            title: "Veja a ficha técnica",
+            desc: "Normas, especificações, amostras reais e alternativas compatíveis.",
+            action: () => toast({
+              title: "Fichas técnicas",
+              description: "Acesse informações completas sobre cada material.",
+            })
+          },{
+            icon: <Truck className="h-5 w-5"/>,
+            title: "Solicite amostras",
+            desc: "Monte um kit e receba em 48–72h com rastreio.",
+            action: () => {
+              scrollToSection('colecoes');
+              toast({
+                title: "Solicite amostras",
+                description: "Clique nos materiais para adicionar ao seu kit.",
+              });
+            }
+          }].map((step, i) => (
+            <motion.div key={i} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Card 
+                className="rounded-3xl border-border cursor-pointer hover:shadow-md transition-shadow"
+                onClick={step.action}
               >
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="w-20 h-20 rounded-full border-2 border-orange-200 text-orange-500 hover:bg-orange-50 mb-6"
-                  onClick={step.action}
-                >
-                  {step.icon}
-                </Button>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                  {step.title}
-                </h3>
-                <p className="text-gray-600">
-                  {step.desc}
-                </p>
-              </motion.div>
-            ))}
-          </div>
+                <CardContent className="pt-6">
+                  <div className="flex items-start gap-3">
+                    <div className="h-10 w-10 rounded-2xl bg-accent/20 grid place-items-center">
+                      {step.icon}
+                    </div>
+                    <div>
+                      <div className="font-medium">{step.title}</div>
+                      <p className="text-muted-foreground text-sm">{step.desc}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-r from-orange-500 to-orange-600">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl font-bold text-white mb-4">
-              Monte seu kit de amostras em minutos
-            </h2>
-            <p className="text-xl text-orange-100 mb-8">
-              Crie listas de materiais por projeto, compartilhe com a equipe e integre aos seus cadernos de especificação.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                size="lg"
-                className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-3"
-                onClick={() => navigate('/login')}
+      <section className="mx-auto max-w-7xl px-4 pb-16">
+        <div className="rounded-3xl border border-border p-8 md:p-12 bg-accent/5 relative overflow-hidden">
+          <div className="absolute -inset-1 pointer-events-none opacity-30">
+            <div className="h-full w-full bg-gradient-to-r from-accent/20 to-transparent" />
+          </div>
+
+          <div className="relative">
+            <h3 className="text-2xl md:text-3xl font-semibold tracking-tight">Monte seu kit de amostras em minutos</h3>
+            <p className="mt-2 text-muted-foreground max-w-2xl">Crie listas de materiais por projeto, compartilhe com a equipe e integre aos seus cadernos de especificação.</p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Button 
+                size="lg" 
+                className="rounded-2xl"
+                onClick={() => {
+                  scrollToSection('colecoes');
+                  toast({
+                    title: "Vamos começar!",
+                    description: "Explore nossas coleções e crie seu primeiro kit.",
+                  });
+                }}
               >
                 Começar agora
               </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-white text-white hover:bg-white/10 px-8 py-3"
-                onClick={() => scrollToSection('materiais')}
+              <Button 
+                size="lg" 
+                variant="secondary" 
+                className="rounded-2xl"
+                onClick={() => toast({
+                  title: "Fale conosco",
+                  description: "Nossa equipe entrará em contato em até 24h.",
+                })}
               >
-                Ver materiais
+                Falar com especialista
               </Button>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            <Logo variant="full" className="mb-4 md:mb-0" />
-            <p className="text-gray-400 text-center">
-              © 2024 Amostra. Plataforma de materiais para arquitetos.
-            </p>
+      <footer id="sobre" className="border-t border-border py-10">
+        <div className="mx-auto max-w-7xl px-4 grid md:grid-cols-4 gap-8 text-sm text-muted-foreground">
+          <div>
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-xl bg-primary text-primary-foreground grid place-items-center font-semibold">M</div>
+              <span className="font-semibold text-foreground">Amostraa</span>
+            </div>
+            <p className="mt-3">Plataforma de amostras e especificações para arquitetura e interiores.</p>
+          </div>
+          <div>
+            <div className="text-foreground font-medium mb-2">Produto</div>
+            <ul className="space-y-1">
+              <li>
+                <button 
+                  className="hover:text-foreground transition"
+                  onClick={() => scrollToSection('colecoes')}
+                >
+                  Catálogo
+                </button>
+              </li>
+              <li>
+                <button 
+                  className="hover:text-foreground transition"
+                  onClick={() => scrollToSection('colecoes')}
+                >
+                  Coleções
+                </button>
+              </li>
+              <li>
+                <button 
+                  className="hover:text-foreground transition"
+                  onClick={() => toast({ title: "Parcerias", description: "Informações sobre nossos parceiros." })}
+                >
+                  Parcerias
+                </button>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <div className="text-foreground font-medium mb-2">Recursos</div>
+            <ul className="space-y-1">
+              <li>
+                <button 
+                  className="hover:text-foreground transition"
+                  onClick={() => toast({ title: "Guia de especificação", description: "Manual completo para especificação de materiais." })}
+                >
+                  Guia de especificação
+                </button>
+              </li>
+              <li>
+                <button 
+                  className="hover:text-foreground transition"
+                  onClick={() => toast({ title: "Sustentabilidade", description: "Conheça nossas práticas sustentáveis." })}
+                >
+                  Sustentabilidade
+                </button>
+              </li>
+              <li>
+                <button 
+                  className="hover:text-foreground transition"
+                  onClick={() => toast({ title: "Suporte", description: "Entre em contato com nossa equipe de suporte." })}
+                >
+                  Suporte
+                </button>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <div className="text-foreground font-medium mb-2">Contato</div>
+            <ul className="space-y-1">
+              <li>
+                <button 
+                  className="hover:text-foreground transition"
+                  onClick={() => {
+                    navigator.clipboard.writeText('contato@amostraa.com');
+                    toast({ title: "Email copiado!", description: "contato@amostraa.com" });
+                  }}
+                >
+                  contato@amostraa.com
+                </button>
+              </li>
+              <li>+55 47 99212-2218</li>
+              <li>São Paulo, SP</li>
+            </ul>
           </div>
         </div>
       </footer>
