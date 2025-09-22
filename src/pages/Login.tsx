@@ -15,6 +15,16 @@ export default function Login() {
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!supabase) {
+      toast({
+        title: "Supabase não configurado",
+        description: "Configure a integração Supabase para usar o login.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (!email || !password) {
       toast({
         title: "Campos obrigatórios",
@@ -50,6 +60,15 @@ export default function Login() {
   };
 
   const handleSocialLogin = async (provider: 'google' | 'facebook') => {
+    if (!supabase) {
+      toast({
+        title: "Supabase não configurado",
+        description: "Configure a integração Supabase para usar o login social.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
