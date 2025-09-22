@@ -2,11 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* MateriaLab Design System - Materiais e texturas para arquitetura */
 
 @layer base {
+  html, body {
+    height: 100%;
+  }
+  
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -38,20 +48,21 @@ All colors MUST be HSL.
 
     --radius: 0.5rem;
 
+    /* MateriaLab Material Textures */
+    --texture-madeira: linear-gradient(135deg, hsl(24 53% 29%) 0%, hsl(24 38% 46%) 45%, hsl(24 47% 33%) 100%);
+    --texture-concreto: radial-gradient(circle at 30% 30%, hsl(209 8% 78%), transparent 60%), linear-gradient(180deg, hsl(209 9% 75%), hsl(210 4% 60%));
+    --texture-marmore: radial-gradient(circle at 20% 20%, hsl(0 0% 100%), transparent 45%), linear-gradient(135deg, hsl(210 20% 97%), hsl(210 11% 87%));
+    --texture-metal: linear-gradient(90deg, hsl(0 0% 84%) 0%, hsl(0 0% 95%) 50%, hsl(0 0% 84%) 100%);
+    --texture-tecido: repeating-linear-gradient(45deg, hsl(215 17% 82%) 0 10px, hsl(215 14% 74%) 10px 20px);
+    --texture-biocomposito: repeating-linear-gradient(0deg, hsl(73 30% 76%) 0 8px, hsl(73 25% 67%) 8px 16px);
+
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -91,15 +102,5 @@ All colors MUST be HSL.
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground;
   }
 }

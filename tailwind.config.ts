@@ -13,6 +13,14 @@ export default {
       },
     },
     extend: {
+      backgroundImage: {
+        'texture-madeira': 'var(--texture-madeira)',
+        'texture-concreto': 'var(--texture-concreto)',
+        'texture-marmore': 'var(--texture-marmore)',
+        'texture-metal': 'var(--texture-metal)',
+        'texture-tecido': 'var(--texture-tecido)',
+        'texture-biocomposito': 'var(--texture-biocomposito)',
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
