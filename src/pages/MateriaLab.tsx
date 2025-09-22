@@ -78,10 +78,7 @@ export default function MateriaLab() {
       {/* Header */}
       <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-b border-border">
         <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-xl bg-primary text-primary-foreground grid place-items-center font-semibold">M</div>
-            <span className="font-semibold tracking-tight">Amostraa</span>
-          </div>
+          <Logo onClick={() => navigate('/')} className="flex-shrink-0" />
           
           <nav className="hidden md:flex items-center gap-6 text-sm">
             <button className="hover:text-muted-foreground transition" onClick={() => scrollToSection('colecoes')}>
