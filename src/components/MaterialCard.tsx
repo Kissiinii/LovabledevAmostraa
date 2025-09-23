@@ -34,7 +34,10 @@ export const MaterialCard = ({ name, code, texture, onSampleRequest }: MaterialC
         onMouseLeave={() => setIsHovered(false)}
         onClick={handleSampleRequest}
       >
-        <div className={`h-32 ${texture}`} />
+        <div 
+          className="h-32 bg-cover bg-center rounded-t-2xl" 
+          style={{ backgroundImage: `url(${texture})` }} 
+        />
         <CardContent className="p-3">
           <div className="font-medium text-sm truncate">{name}</div>
           <div className="text-muted-foreground text-xs">{code}</div>

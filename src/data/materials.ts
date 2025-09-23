@@ -1,17 +1,23 @@
 import { Material } from "@/hooks/useMaterialSearch";
+import carvalhoEuropeu from "@/assets/carvalho-europeu.jpg";
+import concretoUrbano from "@/assets/concreto-urbano.jpg";
+import marmoreCarrara from "@/assets/marmore-carrara.jpg";
+import acoEscovado from "@/assets/aco-escovado.jpg";
+import linhoNatural from "@/assets/linho-natural.jpg";
+import biofiberOlive from "@/assets/biofiber-olive.jpg";
 
 export const materials: Material[] = [
   { 
     name: "Carvalho Europeu", 
     code: "WD-214", 
-    texture: "bg-texture-madeira",
+    texture: carvalhoEuropeu,
     category: "madeira",
     isEco: true
   },
   { 
     name: "Concreto Urbano", 
     code: "CC-031", 
-    texture: "bg-texture-concreto",
+    texture: concretoUrbano,
     category: "pedra",
     isAcoustic: true,
     isExternal: true
@@ -19,20 +25,20 @@ export const materials: Material[] = [
   { 
     name: "Mármore Carrara", 
     code: "MB-112", 
-    texture: "bg-texture-marmore",
+    texture: marmoreCarrara,
     category: "pedra"
   },
   { 
     name: "Aço Escovado", 
     code: "MT-502", 
-    texture: "bg-texture-metal",
+    texture: acoEscovado,
     category: "metal",
     isExternal: true
   },
   { 
     name: "Linho Natural", 
     code: "TX-044", 
-    texture: "bg-texture-tecido",
+    texture: linhoNatural,
     category: "tecido",
     isEco: true,
     isAcoustic: true
@@ -40,7 +46,7 @@ export const materials: Material[] = [
   { 
     name: "BioFiber Olive", 
     code: "BF-207", 
-    texture: "bg-texture-biocomposito",
+    texture: biofiberOlive,
     category: "biocomposito",
     isEco: true,
     isAcoustic: true

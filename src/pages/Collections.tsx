@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Search, ChevronLeft, Filter } from "lucide-react";
 import { MaterialCard } from "@/components/MaterialCard";
 import { FilterButton } from "@/components/FilterButton";
+import { SampleKitPopup } from "@/components/SampleKitPopup";
 import { useMaterialSearch } from "@/hooks/useMaterialSearch";
 import { Logo } from "@/components/Logo";
 import { materials, collections, filterOptions } from "@/data/materials";
@@ -16,6 +17,8 @@ export default function Collections() {
   const navigate = useNavigate();
   const [requestedSamples, setRequestedSamples] = useState<Array<{ name: string; code: string }>>([]);
   const [selectedCollection, setSelectedCollection] = useState<number | null>(null);
+  const [isKitPopupOpen, setIsKitPopupOpen] = useState(false);
+  const kitButtonRef = useRef<HTMLButtonElement>(null);
 
   const {
     searchTerm,
@@ -29,6 +32,19 @@ export default function Collections() {
     if (!requestedSamples.find(s => s.code === material.code)) {
       setRequestedSamples(prev => [...prev, material]);
     }
+  };
+
+  const handleRemoveSample = (code: string) => {
+    setRequestedSamples(prev => prev.filter(s => s.code !== code));
+  };
+
+  const handleRequestKit = () => {
+    toast({
+      title: "Kit solicitado com sucesso!",
+      description: `Seu kit com ${requestedSamples.length} amostras será enviado em breve.`,
+    });
+    setRequestedSamples([]);
+    setIsKitPopupOpen(false);
   };
 
   const handleSearch = () => {
@@ -77,9 +93,23 @@ export default function Collections() {
             </Button>
             
             {requestedSamples.length > 0 && (
-              <Button variant="outline" className="gap-2">
-                Kit ({requestedSamples.length})
-              </Button>
+              <div className="relative">
+                <Button 
+                  ref={kitButtonRef}
+                  variant="outline" 
+                  className="gap-2"
+                  onClick={() => setIsKitPopupOpen(!isKitPopupOpen)}
+                >
+                  Kit ({requestedSamples.length})
+                </Button>
+                <SampleKitPopup
+                  samples={requestedSamples}
+                  isOpen={isKitPopupOpen}
+                  onClose={() => setIsKitPopupOpen(false)}
+                  onRemoveSample={handleRemoveSample}
+                  onRequestKit={handleRequestKit}
+                />
+              </div>
             )}
             
             <Button className="rounded-2xl bg-orange-500 hover:bg-orange-600" onClick={() => navigate('/login')}>
@@ -117,7 +147,11 @@ export default function Collections() {
                 <CardContent>
                   <div className="grid grid-cols-3 gap-2 mb-4">
                     {collection.materials.slice(0, 6).map((material, i) => (
-                      <div key={i} className={`h-20 rounded-xl border border-border ${material.texture}`}/>
+                      <div 
+                        key={i} 
+                        className="h-20 rounded-xl border border-border bg-cover bg-center"
+                        style={{ backgroundImage: `url(${material.texture})` }}
+                      />
                     ))}
                   </div>
                   <div className="flex items-center justify-between text-sm text-muted-foreground">
