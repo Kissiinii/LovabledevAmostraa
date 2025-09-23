@@ -81,13 +81,13 @@ export default function MateriaLab() {
           <Logo onClick={() => navigate('/')} className="flex-shrink-0" />
           
           <nav className="hidden md:flex items-center gap-6 text-sm">
-            <button className="hover:text-muted-foreground transition" onClick={() => scrollToSection('colecoes')}>
+            <button className="hover:text-muted-foreground transition" onClick={() => navigate('/collections')}>
               Coleções
             </button>
-            <button className="hover:text-muted-foreground transition" onClick={() => scrollToSection('como-funciona')}>
+            <button className="hover:text-muted-foreground transition" onClick={() => navigate('/how-it-works')}>
               Como funciona
             </button>
-            <button className="hover:text-muted-foreground transition" onClick={() => scrollToSection('sobre')}>
+            <button className="hover:text-muted-foreground transition" onClick={() => navigate('/about')}>
               Sobre
             </button>
           </nav>
@@ -139,13 +139,13 @@ export default function MateriaLab() {
             className="md:hidden border-t border-border bg-background p-4"
           >
             <nav className="flex flex-col gap-3">
-              <button className="text-left hover:text-muted-foreground" onClick={() => scrollToSection('colecoes')}>
+              <button className="text-left hover:text-muted-foreground" onClick={() => navigate('/collections')}>
                 Coleções
               </button>
-              <button className="text-left hover:text-muted-foreground" onClick={() => scrollToSection('como-funciona')}>
+              <button className="text-left hover:text-muted-foreground" onClick={() => navigate('/how-it-works')}>
                 Como funciona
               </button>
-              <button className="text-left hover:text-muted-foreground" onClick={() => scrollToSection('sobre')}>
+              <button className="text-left hover:text-muted-foreground" onClick={() => navigate('/about')}>
                 Sobre
               </button>
               <div className="flex gap-2 mt-2">
@@ -306,37 +306,34 @@ export default function MateriaLab() {
         </div>
       </section>
 
-      {/* Filters Section */}
+      {/* Featured Materials Section */}
       <section className="mx-auto max-w-7xl px-4 pb-8">
-        <div className="flex flex-wrap gap-2">
-          {filterOptions.map((filter) => (
-            <FilterButton
-              key={filter}
-              label={filter}
-              isActive={activeFilters.includes(filter)}
-              onClick={() => toggleFilter(filter)}
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-semibold tracking-tight mb-2">Materiais em destaque</h2>
+          <p className="text-muted-foreground">Seleção especial dos nossos materiais mais procurados</p>
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
+          {materials.slice(0, 6).map((material) => (
+            <MaterialCard
+              key={material.code}
+              name={material.name}
+              code={material.code}
+              texture={material.texture}
+              onSampleRequest={handleSampleRequest}
             />
           ))}
         </div>
-        
-        {activeFilters.length > 0 && (
-          <div className="mt-4">
-            <h3 className="text-lg font-medium mb-3">
-              Materiais filtrados ({filteredMaterials.length})
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {filteredMaterials.map((material) => (
-                <MaterialCard
-                  key={material.code}
-                  name={material.name}
-                  code={material.code}
-                  texture={material.texture}
-                  onSampleRequest={handleSampleRequest}
-                />
-              ))}
-            </div>
-          </div>
-        )}
+
+        <div className="text-center">
+          <Button 
+            variant="outline" 
+            className="gap-2 rounded-2xl"
+            onClick={() => navigate('/collections')}
+          >
+            Ver todos os materiais <ChevronRight className="h-4 w-4"/>
+          </Button>
+        </div>
       </section>
 
       {/* Collections Section */}
@@ -346,10 +343,7 @@ export default function MateriaLab() {
           <Button 
             variant="link" 
             className="gap-2"
-            onClick={() => toast({ 
-              title: "Todas as coleções", 
-              description: "Navegação para página completa de coleções." 
-            })}
+            onClick={() => navigate('/collections')}
           >
             Ver todas <ChevronRight className="h-4 w-4"/>
           </Button>
@@ -374,7 +368,7 @@ export default function MateriaLab() {
                     variant="secondary" 
                     size="sm" 
                     className="rounded-xl"
-                    onClick={() => handleExploreCollection(collection.id)}
+                    onClick={() => navigate('/collections')}
                   >
                     Explorar
                   </Button>
