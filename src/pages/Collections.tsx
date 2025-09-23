@@ -15,7 +15,7 @@ import { toast } from "@/hooks/use-toast";
 
 export default function Collections() {
   const navigate = useNavigate();
-  const [requestedSamples, setRequestedSamples] = useState<Array<{ name: string; code: string }>>([]);
+  const [requestedSamples, setRequestedSamples] = useState<Array<{ name: string; code: string; texture?: string }>>([]);
   const [selectedCollection, setSelectedCollection] = useState<number | null>(null);
   const [isKitPopupOpen, setIsKitPopupOpen] = useState(false);
   const kitButtonRef = useRef<HTMLButtonElement>(null);
@@ -28,7 +28,7 @@ export default function Collections() {
     filteredMaterials,
   } = useMaterialSearch(materials);
 
-  const handleSampleRequest = (material: { name: string; code: string }) => {
+  const handleSampleRequest = (material: { name: string; code: string; texture?: string }) => {
     if (!requestedSamples.find(s => s.code === material.code)) {
       setRequestedSamples(prev => [...prev, material]);
     }

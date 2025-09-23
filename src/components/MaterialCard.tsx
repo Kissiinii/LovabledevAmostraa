@@ -8,14 +8,14 @@ interface MaterialCardProps {
   name: string;
   code: string;
   texture: string;
-  onSampleRequest?: (material: { name: string; code: string }) => void;
+  onSampleRequest?: (material: { name: string; code: string; texture?: string }) => void;
 }
 
 export const MaterialCard = ({ name, code, texture, onSampleRequest }: MaterialCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleSampleRequest = () => {
-    onSampleRequest?.({ name, code });
+    onSampleRequest?.({ name, code, texture });
     toast({
       title: "Amostra solicitada",
       description: `${name} (${code}) foi adicionada ao seu kit de amostras.`,

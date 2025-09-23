@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 interface Sample {
   name: string;
   code: string;
+  texture?: string;
 }
 
 interface SampleKitPopupProps {
@@ -53,8 +54,14 @@ export const SampleKitPopup = ({
                 {samples.map((sample) => (
                   <div 
                     key={sample.code}
-                    className="flex items-center justify-between p-2 rounded-lg bg-accent/20 border"
+                    className="flex items-center gap-3 p-2 rounded-lg bg-accent/20 border"
                   >
+                    {sample.texture && (
+                      <div 
+                        className="w-12 h-12 rounded-lg bg-cover bg-center border border-border flex-shrink-0"
+                        style={{ backgroundImage: `url(${sample.texture})` }}
+                      />
+                    )}
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{sample.name}</p>
                       <p className="text-xs text-muted-foreground">{sample.code}</p>
@@ -63,7 +70,7 @@ export const SampleKitPopup = ({
                       variant="ghost" 
                       size="sm"
                       onClick={() => onRemoveSample(sample.code)}
-                      className="flex-shrink-0 ml-2"
+                      className="flex-shrink-0"
                     >
                       <X className="h-3 w-3" />
                     </Button>

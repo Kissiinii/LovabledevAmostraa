@@ -14,7 +14,7 @@ import { toast } from "@/hooks/use-toast";
 
 export default function MateriaLab() {
   const navigate = useNavigate();
-  const [requestedSamples, setRequestedSamples] = useState<Array<{ name: string; code: string }>>([]);
+  const [requestedSamples, setRequestedSamples] = useState<Array<{ name: string; code: string; texture?: string }>>([]);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showSampleKit, setShowSampleKit] = useState(false);
 
@@ -26,7 +26,7 @@ export default function MateriaLab() {
     filteredMaterials,
   } = useMaterialSearch(materials);
 
-  const handleSampleRequest = (material: { name: string; code: string }) => {
+  const handleSampleRequest = (material: { name: string; code: string; texture?: string }) => {
     if (!requestedSamples.find(s => s.code === material.code)) {
       setRequestedSamples(prev => [...prev, material]);
     }
@@ -288,9 +288,12 @@ export default function MateriaLab() {
                       animate={{ x: row ? [-200, 0] : [0, -200] }}
                       transition={{ duration: 16, repeat: Infinity, ease: "linear" }}
                     >
-                      {materials.concat(materials).map((material, i) => (
+                       {materials.concat(materials).map((material, i) => (
                         <div key={`${row}-${i}`} className="w-40 h-40 rounded-2xl border border-border overflow-hidden shadow-sm bg-card">
-                          <div className={`h-3/4 ${material.texture}`} />
+                          <div 
+                            className="h-3/4 bg-cover bg-center"
+                            style={{ backgroundImage: `url(${material.texture})` }}
+                          />
                           <div className="h-1/4 p-2 text-xs">
                             <div className="font-medium truncate">{material.name}</div>
                             <div className="text-muted-foreground">{material.code}</div>
@@ -359,7 +362,11 @@ export default function MateriaLab() {
               <CardContent>
                 <div className="grid grid-cols-3 gap-2">
                   {collection.materials.map((material, i) => (
-                    <div key={i} className={`h-20 rounded-xl border border-border ${material.texture}`}/>
+                    <div 
+                      key={i} 
+                      className="h-20 rounded-xl border border-border bg-cover bg-center"
+                      style={{ backgroundImage: `url(${material.texture})` }}
+                    />
                   ))}
                 </div>
                 <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
