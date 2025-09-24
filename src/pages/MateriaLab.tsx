@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { ChevronRight, Search, Leaf, Ruler, Truck, Star, Menu, X } from "lucide-react";
 import { MaterialCard } from "@/components/MaterialCard";
 import { FilterButton } from "@/components/FilterButton";
+import { SampleKitPopup } from "@/components/SampleKitPopup";
 import { useMaterialSearch } from "@/hooks/useMaterialSearch";
 import { Logo } from "@/components/Logo";
 import { materials, collections, filterOptions } from "@/data/materials";
@@ -106,15 +107,28 @@ export default function MateriaLab() {
               </Button>
             </div>
             
-            {requestedSamples.length > 0 && (
-              <Button 
-                variant="outline" 
-                className="gap-2"
-                onClick={() => setShowSampleKit(!showSampleKit)}
-              >
-                Kit ({requestedSamples.length})
-              </Button>
-            )}
+            <div className="relative">
+              {requestedSamples.length > 0 && (
+                <Button 
+                  variant="outline" 
+                  className="gap-2"
+                  onClick={() => setShowSampleKit(!showSampleKit)}
+                >
+                  Kit ({requestedSamples.length})
+                </Button>
+              )}
+              
+              <SampleKitPopup 
+                samples={requestedSamples} 
+                isOpen={showSampleKit}
+                onClose={() => setShowSampleKit(false)}
+                onRemoveSample={handleRemoveSample}
+                onRequestKit={() => {
+                  navigate('/pre-selling');
+                  setShowSampleKit(false);
+                }}
+              />
+            </div>
             
             <Button className="rounded-2xl bg-orange-500 hover:bg-orange-600" onClick={() => navigate('/login')}>
               Entrar
@@ -163,57 +177,6 @@ export default function MateriaLab() {
           </motion.div>
         )}
 
-        {/* Sample Kit Panel */}
-        {showSampleKit && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="border-t border-border bg-card p-4"
-          >
-            <h3 className="font-medium mb-3">Seu Kit de Amostras</h3>
-            {requestedSamples.length > 0 ? (
-              <div className="space-y-2">
-                {requestedSamples.map(sample => (
-                  <div key={sample.code} className="flex items-center justify-between text-sm">
-                    <span>{sample.name} ({sample.code})</span>
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
-                      onClick={() => handleRemoveSample(sample.code)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </div>
-                ))}
-                <div className="flex gap-2 pt-2">
-                  <Button 
-                    size="sm" 
-                    className="flex-1"
-                    onClick={() => {
-                      toast({
-                        title: "Kit enviado!",
-                        description: `${requestedSamples.length} amostras serão entregues em 48-72h.`,
-                      });
-                      setRequestedSamples([]);
-                      setShowSampleKit(false);
-                    }}
-                  >
-                    Finalizar pedido
-                  </Button>
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    onClick={() => setRequestedSamples([])}
-                  >
-                    Limpar
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <p className="text-muted-foreground text-sm">Nenhuma amostra selecionada</p>
-            )}
-          </motion.div>
-        )}
       </header>
 
       {/* Hero Section */}
