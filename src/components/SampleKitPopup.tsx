@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { X, Download } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 interface Sample {
   name: string;
@@ -24,7 +25,14 @@ export const SampleKitPopup = ({
   onRemoveSample, 
   onRequestKit 
 }: SampleKitPopupProps) => {
+  const navigate = useNavigate();
+  
   if (!isOpen) return null;
+
+  const handleRequestKit = () => {
+    navigate('/pre-selling', { state: { selectedItems: samples } });
+    onRequestKit();
+  };
 
   return (
     <AnimatePresence>
@@ -82,7 +90,7 @@ export const SampleKitPopup = ({
             {samples.length > 0 && (
               <Button 
                 className="w-full gap-2" 
-                onClick={onRequestKit}
+                onClick={handleRequestKit}
               >
                 <Download className="h-4 w-4" />
                 Solicitar Kit ({samples.length})

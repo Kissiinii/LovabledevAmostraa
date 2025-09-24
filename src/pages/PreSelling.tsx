@@ -1,25 +1,59 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ChevronLeft, Package, Truck, CheckCircle, Clock } from "lucide-react";
+import { ChevronLeft, Package, Truck, CheckCircle, Plus, Minus, MapPin } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { toast } from "@/hooks/use-toast";
 
 export default function PreSelling() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const selectedItems = location.state?.selectedItems || [];
+  
+  const [cartItems, setCartItems] = useState(
+    selectedItems.map((item: any) => ({ ...item, quantity: 1 }))
+  );
+  const [cep, setCep] = useState("");
+  const [deliveryInfo, setDeliveryInfo] = useState<{ days: string; price: string } | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleQuantityChange = (index: number, change: number) => {
+    setCartItems(prev => 
+      prev.map((item, i) => 
+        i === index 
+          ? { ...item, quantity: Math.max(1, item.quantity + change) }
+          : item
+      )
+    );
+  };
+
+  const calculateDelivery = () => {
+    if (cep.length === 8) {
+      // Simulação de cálculo de frete
+      setDeliveryInfo({
+        days: "5-7 dias úteis",
+        price: "R$ 15,90"
+      });
+      toast({
+        title: "Prazo calculado!",
+        description: "Entrega estimada em 5-7 dias úteis por R$ 15,90",
+      });
+    }
+  };
+
+  const handleCheckout = (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Kit solicitado com sucesso!",
-      description: "Entraremos em contato em até 24h para confirmar o endereço de entrega.",
+    navigate('/checkout', { 
+      state: { 
+        cartItems, 
+        deliveryInfo,
+        formData: new FormData(e.target as HTMLFormElement)
+      }
     });
-    navigate('/');
   };
 
   const benefits = [
@@ -31,7 +65,7 @@ export default function PreSelling() {
     {
       icon: <Truck className="h-5 w-5 text-primary" />,
       title: "Entrega expressa",
-      description: "48-72h úteis"
+      description: "Calculada por CEP"
     },
     {
       icon: <CheckCircle className="h-5 w-5 text-primary" />,
@@ -64,10 +98,10 @@ export default function PreSelling() {
           className="text-center mb-12"
         >
           <h1 className="text-4xl md:text-5xl font-semibold tracking-tight mb-6">
-            Solicite seu kit de amostras
+            Carrinho de Amostras
           </h1>
           <p className="text-muted-foreground text-xl max-w-2xl mx-auto mb-8">
-            Preencha os dados abaixo e receba materiais selecionados em casa para avaliar antes de especificar
+            Revise seus itens selecionados e preencha os dados para entrega
           </p>
 
           {/* Benefits */}
@@ -93,6 +127,62 @@ export default function PreSelling() {
           </div>
         </motion.div>
 
+        {/* Cart Items */}
+        {cartItems.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mb-8"
+          >
+            <Card className="rounded-3xl border-border">
+              <CardHeader>
+                <CardTitle className="text-xl">Itens Selecionados ({cartItems.length})</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {cartItems.map((item: any, index: number) => (
+                  <div key={index} className="flex items-center justify-between p-4 border border-border rounded-2xl">
+                    <div className="flex items-center gap-4">
+                      {item.texture && (
+                        <img 
+                          src={item.texture} 
+                          alt={item.name}
+                          className="w-12 h-12 rounded-lg object-cover"
+                        />
+                      )}
+                      <div>
+                        <h4 className="font-medium">{item.name}</h4>
+                        <p className="text-sm text-muted-foreground">{item.code}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 rounded-lg"
+                        onClick={() => handleQuantityChange(index, -1)}
+                      >
+                        <Minus className="h-4 w-4" />
+                      </Button>
+                      <span className="w-8 text-center font-medium">{item.quantity}</span>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 rounded-lg"
+                        onClick={() => handleQuantityChange(index, 1)}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
         {/* Form */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -104,7 +194,7 @@ export default function PreSelling() {
               <CardTitle className="text-center text-2xl">Dados para entrega</CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleCheckout} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="name">Nome completo *</Label>
@@ -128,8 +218,31 @@ export default function PreSelling() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="address">Endereço completo *</Label>
-                  <Input id="address" placeholder="Rua, número, complemento, bairro, cidade - CEP" required />
+                  <Label htmlFor="cep">CEP para entrega *</Label>
+                  <div className="flex gap-2">
+                    <Input 
+                      id="cep" 
+                      placeholder="00000-000" 
+                      value={cep}
+                      onChange={(e) => setCep(e.target.value.replace(/\D/g, ''))}
+                      maxLength={8}
+                      required 
+                    />
+                    <Button 
+                      type="button" 
+                      variant="outline"
+                      onClick={calculateDelivery}
+                      disabled={cep.length !== 8}
+                    >
+                      <MapPin className="h-4 w-4 mr-1" />
+                      Calcular
+                    </Button>
+                  </div>
+                  {deliveryInfo && (
+                    <div className="text-sm text-muted-foreground">
+                      Prazo: {deliveryInfo.days} | Frete: {deliveryInfo.price}
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -144,7 +257,7 @@ export default function PreSelling() {
                 <div className="flex flex-col sm:flex-row gap-4 pt-4">
                   <Button type="submit" size="lg" className="flex-1 rounded-2xl">
                     <Package className="h-5 w-5 mr-2" />
-                    Solicitar kit gratuito
+                    Ir para checkout
                   </Button>
                   <Button 
                     type="button" 
@@ -153,32 +266,11 @@ export default function PreSelling() {
                     className="rounded-2xl"
                     onClick={() => navigate('/collections')}
                   >
-                    Voltar às coleções
+                    Continuar comprando
                   </Button>
                 </div>
               </form>
             </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Info Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="mt-12 text-center"
-        >
-          <Card className="rounded-2xl border-border bg-accent/5 p-8">
-            <div className="flex justify-center mb-4">
-              <Clock className="h-8 w-8 text-primary" />
-            </div>
-            <h3 className="text-xl font-semibold mb-2">Prazo de entrega</h3>
-            <p className="text-muted-foreground mb-4">
-              Seu kit será enviado em até 48-72h úteis após a confirmação dos dados
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Entregamos para todo o Brasil via Correios com código de rastreamento
-            </p>
           </Card>
         </motion.div>
       </section>
