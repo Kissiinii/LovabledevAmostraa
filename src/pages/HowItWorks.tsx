@@ -100,7 +100,7 @@ export default function HowItWorks() {
       <section className="mx-auto max-w-7xl px-4 py-16">
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-semibold tracking-tight mb-6">
-            Como funciona a <span className="text-primary">Amostraa</span>
+            Como funciona a <Logo variant="full" className="inline-block" animated={false} />
           </h1>
           <p className="text-muted-foreground text-xl max-w-3xl mx-auto">
             Um processo simples e eficiente para você encontrar, avaliar e especificar os materiais ideais para seus projetos
