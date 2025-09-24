@@ -47,11 +47,14 @@ export default function PreSelling() {
 
   const handleCheckout = (e: React.FormEvent) => {
     e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
+    
     navigate('/checkout', { 
       state: { 
         cartItems, 
         deliveryInfo,
-        formData: new FormData(e.target as HTMLFormElement)
+        formData: Object.fromEntries(formData.entries())
       }
     });
   };
