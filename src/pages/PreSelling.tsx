@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { ChevronLeft, Package, Truck, CheckCircle, Plus, Minus, MapPin } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { toast } from "@/hooks/use-toast";
@@ -43,20 +42,6 @@ export default function PreSelling() {
         description: "Entrega estimada em 5-7 dias úteis por R$ 15,90",
       });
     }
-  };
-
-  const handleCheckout = (e: React.FormEvent) => {
-    e.preventDefault();
-    const form = e.target as HTMLFormElement;
-    const formData = new FormData(form);
-    
-    navigate('/checkout', { 
-      state: { 
-        cartItems, 
-        deliveryInfo,
-        formData: Object.fromEntries(formData.entries())
-      }
-    });
   };
 
   const benefits = [
@@ -186,42 +171,21 @@ export default function PreSelling() {
           </motion.div>
         )}
 
-        {/* Form */}
+        {/* Delivery Calculator */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <Card className="rounded-3xl border-border">
+          <Card className="rounded-3xl border-border mb-8">
             <CardHeader>
-              <CardTitle className="text-center text-2xl">Dados para entrega</CardTitle>
+              <CardTitle className="text-center text-2xl">Calculadora de Frete</CardTitle>
+              <p className="text-muted-foreground text-center">Informe seu CEP para calcular o prazo de entrega</p>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleCheckout} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Nome completo *</Label>
-                    <Input id="name" placeholder="Seu nome" required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">E-mail *</Label>
-                    <Input id="email" type="email" placeholder="seu@email.com" required />
-                  </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Telefone *</Label>
-                    <Input id="phone" placeholder="(11) 99999-9999" required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="company">Empresa/Escritório</Label>
-                    <Input id="company" placeholder="Nome da empresa" />
-                  </div>
-                </div>
-
+              <div className="max-w-md mx-auto space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="cep">CEP para entrega *</Label>
+                  <Label htmlFor="cep">CEP para entrega</Label>
                   <div className="flex gap-2">
                     <Input 
                       id="cep" 
@@ -229,7 +193,6 @@ export default function PreSelling() {
                       value={cep}
                       onChange={(e) => setCep(e.target.value.replace(/\D/g, ''))}
                       maxLength={8}
-                      required 
                     />
                     <Button 
                       type="button" 
@@ -242,39 +205,101 @@ export default function PreSelling() {
                     </Button>
                   </div>
                   {deliveryInfo && (
-                    <div className="text-sm text-muted-foreground">
-                      Prazo: {deliveryInfo.days} | Frete: {deliveryInfo.price}
+                    <div className="mt-3 p-3 bg-accent/20 rounded-xl">
+                      <div className="text-sm font-medium text-center">
+                        📦 Prazo: {deliveryInfo.days} | 🚚 Frete: {deliveryInfo.price}
+                      </div>
                     </div>
                   )}
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="project">Descreva seu projeto (opcional)</Label>
-                  <Textarea 
-                    id="project" 
-                    placeholder="Conte-nos sobre o projeto onde pretende usar os materiais..."
-                    className="min-h-[100px]"
-                  />
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                  <Button type="submit" size="lg" className="flex-1 rounded-2xl">
-                    <Package className="h-5 w-5 mr-2" />
-                    Ir para checkout
-                  </Button>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    size="lg" 
-                    className="rounded-2xl"
-                    onClick={() => navigate('/collections')}
-                  >
-                    Continuar comprando
-                  </Button>
-                </div>
-              </form>
+              </div>
             </CardContent>
           </Card>
+        </motion.div>
+
+        {/* Upselling */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <Card className="rounded-3xl border-border mb-8">
+            <CardHeader>
+              <CardTitle className="text-center text-2xl">🎯 Potencialize seu projeto</CardTitle>
+              <p className="text-muted-foreground text-center">Adicione serviços que farão a diferença</p>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="p-6 border border-border rounded-2xl hover:border-primary/50 transition-colors">
+                  <div className="text-center mb-4">
+                    <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-3">
+                      <Package className="h-6 w-6 text-primary" />
+                    </div>
+                    <h3 className="font-semibold text-lg mb-2">Consultoria Personalizada</h3>
+                    <p className="text-muted-foreground text-sm mb-4">
+                      Sessão de 1h com especialista para otimizar a escolha dos materiais
+                    </p>
+                    <div className="text-2xl font-bold text-primary mb-2">R$ 150</div>
+                    <div className="text-xs text-muted-foreground line-through">R$ 300</div>
+                  </div>
+                  <Button variant="outline" className="w-full rounded-xl">
+                    Adicionar ao pedido
+                  </Button>
+                </div>
+
+                <div className="p-6 border border-border rounded-2xl hover:border-primary/50 transition-colors">
+                  <div className="text-center mb-4">
+                    <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-3">
+                      <CheckCircle className="h-6 w-6 text-primary" />
+                    </div>
+                    <h3 className="font-semibold text-lg mb-2">Kit Premium</h3>
+                    <p className="text-muted-foreground text-sm mb-4">
+                      Até 25 amostras + frete grátis + fichas técnicas detalhadas
+                    </p>
+                    <div className="text-2xl font-bold text-primary mb-2">R$ 89</div>
+                    <div className="text-xs text-muted-foreground line-through">R$ 150</div>
+                  </div>
+                  <Button variant="outline" className="w-full rounded-xl">
+                    Fazer upgrade
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Actions */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="text-center"
+        >
+          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+            <Button 
+              size="lg" 
+              className="flex-1 rounded-2xl"
+              onClick={() => navigate('/checkout', { state: { cartItems, deliveryInfo } })}
+              disabled={!deliveryInfo}
+            >
+              <Package className="h-5 w-5 mr-2" />
+              Finalizar pedido
+            </Button>
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="rounded-2xl"
+              onClick={() => navigate('/collections')}
+            >
+              Continuar comprando
+            </Button>
+          </div>
+          
+          {!deliveryInfo && (
+            <p className="text-sm text-muted-foreground mt-3">
+              💡 Calcule o frete acima para continuar
+            </p>
+          )}
         </motion.div>
       </section>
     </div>

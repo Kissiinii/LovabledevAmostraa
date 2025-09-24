@@ -13,7 +13,7 @@ import { toast } from "@/hooks/use-toast";
 export default function Checkout() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { cartItems = [], deliveryInfo, formData } = location.state || {};
+  const { cartItems = [], deliveryInfo } = location.state || {};
   
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -113,17 +113,84 @@ export default function Checkout() {
             </Card>
           </motion.div>
 
-          {/* Payment Form */}
+          {/* Personal Data */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
+            className="space-y-6"
           >
+            <Card className="rounded-3xl border-border/40 bg-card/60 backdrop-blur">
+              <CardHeader>
+                <CardTitle>📋 Dados Pessoais</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Nome completo</Label>
+                    <Input id="name" placeholder="Seu nome completo" required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">E-mail</Label>
+                    <Input id="email" type="email" placeholder="seu@email.com" required />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Telefone</Label>
+                    <Input id="phone" placeholder="(11) 99999-9999" required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="cpf">CPF</Label>
+                    <Input id="cpf" placeholder="000.000.000-00" required />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Delivery Options */}
+            <Card className="rounded-3xl border-border/40 bg-card/60 backdrop-blur">
+              <CardHeader>
+                <CardTitle>🚚 Entrega</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <div className="p-4 border border-border rounded-2xl cursor-pointer hover:border-primary/50 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <input type="radio" name="shipping" value="standard" defaultChecked className="text-primary" />
+                        <div>
+                          <h4 className="font-medium">Entrega Padrão</h4>
+                          <p className="text-sm text-muted-foreground">5-7 dias úteis</p>
+                        </div>
+                      </div>
+                      <div className="font-semibold">R$ 15,90</div>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 border border-border rounded-2xl cursor-pointer hover:border-primary/50 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <input type="radio" name="shipping" value="express" className="text-primary" />
+                        <div>
+                          <h4 className="font-medium">Entrega Expressa</h4>
+                          <p className="text-sm text-muted-foreground">2-3 dias úteis</p>
+                        </div>
+                      </div>
+                      <div className="font-semibold">R$ 29,90</div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Payment Form */}
             <Card className="rounded-3xl border-border/40 bg-card/60 backdrop-blur">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <CreditCard className="h-5 w-5" />
-                  Pagamento
+                  💳 Pagamento
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -136,7 +203,14 @@ export default function Checkout() {
                     
                     <div className="space-y-2">
                       <Label htmlFor="cardNumber">Número do cartão</Label>
-                      <Input id="cardNumber" placeholder="0000 0000 0000 0000" required />
+                      <div className="relative">
+                        <Input id="cardNumber" placeholder="0000 0000 0000 0000" required />
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                          <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMTUiIHZpZXdCb3g9IjAgMCAyNCAxNSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjE1IiByeD0iMiIgZmlsbD0iIzAwNTFBNSIvPgo8cmVjdCB3aWR0aD0iMjQiIGhlaWdodD0iMTUiIHJ4PSIyIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMV8xKSIvPgo8L3N2Zz4=" alt="Visa" className="w-6 h-4" />
+                          <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMTUiIHZpZXdCb3g9IjAgMCAyNCAxNSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjE1IiByeD0iMiIgZmlsbD0iI0VCMDAxQiIvPgo8Y2lyY2xlIGN4PSI5IiBjeT0iNy41IiByPSI1LjUiIGZpbGw9IiNGRjVGMDAiLz4KPGNpcmNsZSBjeD0iMTUiIGN5PSI3LjUiIHI9IjUuNSIgZmlsbD0iI0ZGNUYwMCIvPgo8L3N2Zz4=" alt="Mastercard" className="w-6 h-4" />
+                          <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMTUiIHZpZXdCb3g9IjAgMCAyNCAxNSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjE1IiByeD0iMiIgZmlsbD0iIzAwNjhBNyIvPgo8L3N2Zz4=" alt="American Express" className="w-6 h-4" />
+                        </div>
+                      </div>
                     </div>
                     
                     <div className="grid grid-cols-2 gap-4">
