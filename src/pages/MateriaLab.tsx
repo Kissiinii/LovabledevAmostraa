@@ -124,7 +124,7 @@ export default function MateriaLab() {
                 onClose={() => setShowSampleKit(false)}
                 onRemoveSample={handleRemoveSample}
                 onRequestKit={() => {
-                  navigate('/pre-selling');
+                  navigate('/pre-selling', { state: { selectedItems: requestedSamples } });
                   setShowSampleKit(false);
                 }}
               />

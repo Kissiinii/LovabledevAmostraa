@@ -15,7 +15,9 @@ export default function PreSelling() {
   const selectedItems = location.state?.selectedItems || [];
   
   const [cartItems, setCartItems] = useState(
-    selectedItems.map((item: any) => ({ ...item, quantity: 1 }))
+    selectedItems?.length > 0 
+      ? selectedItems.map((item: any) => ({ ...item, quantity: 1 }))
+      : []
   );
   const [cep, setCep] = useState("");
   const [deliveryInfo, setDeliveryInfo] = useState<{ days: string; price: string } | null>(null);
@@ -28,6 +30,21 @@ export default function PreSelling() {
           : item
       )
     );
+  };
+
+  const handleAddComplementaryItem = (item: any) => {
+    setCartItems(prev => {
+      const existingIndex = prev.findIndex(existingItem => existingItem.code === item.code);
+      if (existingIndex >= 0) {
+        return prev.map((cartItem, i) => 
+          i === existingIndex 
+            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+            : cartItem
+        );
+      } else {
+        return [...prev, { ...item, quantity: 1 }];
+      }
+    });
   };
 
   const calculateDelivery = () => {
@@ -97,18 +114,32 @@ export default function PreSelling() {
           {/* Left Column */}
           <div className="lg:col-span-2 space-y-6">
             {/* Cart Items */}
-            {cartItems.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-              >
-                <Card className="rounded-3xl border-border">
-                  <CardHeader>
-                    <CardTitle className="text-xl">Seus Produtos ({cartItems.length})</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {cartItems.map((item: any, index: number) => (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <Card className="rounded-3xl border-border">
+                <CardHeader>
+                  <CardTitle className="text-xl">
+                    Seus Produtos ({cartItems.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {cartItems.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                      <p className="text-muted-foreground">Nenhuma amostra selecionada</p>
+                      <Button 
+                        variant="outline" 
+                        className="mt-4 rounded-xl"
+                        onClick={() => navigate('/collections')}
+                      >
+                        Explorar Materiais
+                      </Button>
+                    </div>
+                  ) : (
+                    cartItems.map((item: any, index: number) => (
                       <div key={index} className="flex items-center justify-between p-4 border border-border rounded-2xl">
                         <div className="flex items-center gap-4">
                           {item.texture && (
@@ -146,11 +177,11 @@ export default function PreSelling() {
                           </Button>
                         </div>
                       </div>
-                    ))}
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
+                    ))
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
 
             {/* Delivery Calculator */}
             <motion.div
@@ -159,11 +190,7 @@ export default function PreSelling() {
               transition={{ delay: 0.2 }}
             >
               <Card className="rounded-3xl border-border">
-                <CardHeader>
-                  <CardTitle className="text-xl">Calcular Prazo de Entrega</CardTitle>
-                  <p className="text-muted-foreground">Informe seu CEP para calcular o prazo</p>
-                </CardHeader>
-                <CardContent>
+                <CardContent className="pt-6">
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="cep">CEP para entrega</Label>
@@ -229,7 +256,16 @@ export default function PreSelling() {
                           <p className="text-sm text-muted-foreground">Combina perfeitamente</p>
                         </div>
                       </div>
-                      <Button variant="outline" size="sm" className="rounded-xl">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="rounded-xl"
+                        onClick={() => handleAddComplementaryItem({
+                          name: "Mármore Cinza Claro",
+                          code: "MCC-001",
+                          texture: "/textures/textura-de-marmore-cinza-claro_1375194-49115.jpg"
+                        })}
+                      >
                         Adicionar
                       </Button>
                     </div>
@@ -246,7 +282,16 @@ export default function PreSelling() {
                           <p className="text-sm text-muted-foreground">Excelente contraste</p>
                         </div>
                       </div>
-                      <Button variant="outline" size="sm" className="rounded-xl">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="rounded-xl"
+                        onClick={() => handleAddComplementaryItem({
+                          name: "Verde Guatemala",
+                          code: "VGT-001", 
+                          texture: "/textures/verde_guatemala.jpg"
+                        })}
+                      >
                         Adicionar
                       </Button>
                     </div>
