@@ -1,8 +1,6 @@
 import React, { useState, useRef } from "react";
-import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Search, ChevronLeft, Filter } from "lucide-react";
 import { MaterialCard } from "@/components/MaterialCard";
@@ -10,13 +8,12 @@ import { FilterButton } from "@/components/FilterButton";
 import { SampleKitPopup } from "@/components/SampleKitPopup";
 import { useMaterialSearch } from "@/hooks/useMaterialSearch";
 import { Logo } from "@/components/Logo";
-import { materials, collections, filterOptions } from "@/data/materials";
+import { materials, filterOptions } from "@/data/materials";
 import { toast } from "@/hooks/use-toast";
 
-export default function Collections() {
+export default function Materials() {
   const navigate = useNavigate();
   const [requestedSamples, setRequestedSamples] = useState<Array<{ name: string; code: string; texture?: string }>>([]);
-  const [selectedCollection, setSelectedCollection] = useState<number | null>(null);
   const [isKitPopupOpen, setIsKitPopupOpen] = useState(false);
   const kitButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -62,11 +59,6 @@ export default function Collections() {
     });
   };
 
-  const selectedCollectionData = collections.find(c => c.id === selectedCollection);
-  const displayMaterials = selectedCollection 
-    ? selectedCollectionData?.materials || []
-    : filteredMaterials;
-
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
@@ -79,8 +71,8 @@ export default function Collections() {
             </Button>
             <Logo onClick={() => navigate('/')} className="flex-shrink-0" />
             <nav className="hidden md:flex items-center gap-4 text-sm ml-4">
-              <button className="hover:text-muted-foreground transition" onClick={() => navigate('/materials')}>
-                Materiais
+              <button className="hover:text-muted-foreground transition" onClick={() => navigate('/collections')}>
+                Coleções
               </button>
             </nav>
           </div>
@@ -128,51 +120,11 @@ export default function Collections() {
       <section className="mx-auto max-w-7xl px-4 py-12">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-semibold tracking-tight mb-4">
-            Explore nossas coleções
+            Catálogo de Materiais
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Materiais cuidadosamente selecionados organizados por aplicação, estilo e desempenho
+            Explore nossa biblioteca completa com {materials.length} materiais de alta qualidade para seus projetos
           </p>
-        </div>
-
-        {/* Collection Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
-          {collections.map((collection) => (
-            <motion.div key={collection.id} whileHover={{ scale: 1.02 }}>
-              <Card 
-                className={`rounded-3xl shadow-sm border-border cursor-pointer transition-all ${
-                  selectedCollection === collection.id ? 'ring-2 ring-primary' : ''
-                }`}
-                onClick={() => setSelectedCollection(selectedCollection === collection.id ? null : collection.id)}
-              >
-                <CardHeader>
-                  <CardTitle className="text-lg">{collection.title}</CardTitle>
-                  <p className="text-sm text-muted-foreground">{collection.description}</p>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-3 gap-2 mb-4">
-                    {collection.materials.slice(0, 6).map((material, i) => (
-                      <div 
-                        key={i} 
-                        className="h-20 rounded-xl border border-border bg-cover bg-center"
-                        style={{ backgroundImage: `url(${material.texture})` }}
-                      />
-                    ))}
-                  </div>
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <span>{collection.materialCount} materiais</span>
-                    <Button 
-                      variant={selectedCollection === collection.id ? "default" : "secondary"}
-                      size="sm" 
-                      className="rounded-xl"
-                    >
-                      {selectedCollection === collection.id ? "Selecionado" : "Explorar"}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
         </div>
 
         {/* Search Bar */}
@@ -212,17 +164,28 @@ export default function Collections() {
           </div>
         </div>
 
-        {/* Selected Collection Header */}
-        {selectedCollection && (
-          <div className="mb-6 p-4 rounded-2xl bg-accent/10 border border-border">
-            <h2 className="text-xl font-medium">{selectedCollectionData?.title}</h2>
-            <p className="text-muted-foreground">{selectedCollectionData?.description}</p>
-          </div>
-        )}
+        {/* Results Count */}
+        <div className="mb-6 flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            Mostrando <span className="font-semibold text-foreground">{filteredMaterials.length}</span> {filteredMaterials.length === 1 ? 'material' : 'materiais'}
+          </p>
+          {(searchTerm || activeFilters.length > 0) && (
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => {
+                setSearchTerm('');
+                activeFilters.forEach(filter => toggleFilter(filter));
+              }}
+            >
+              Limpar filtros
+            </Button>
+          )}
+        </div>
 
         {/* Materials Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {displayMaterials.map((material) => (
+          {filteredMaterials.map((material) => (
             <MaterialCard
               key={material.code}
               name={material.name}
@@ -233,9 +196,24 @@ export default function Collections() {
           ))}
         </div>
 
-        {displayMaterials.length === 0 && (
-          <div className="text-center py-12 text-muted-foreground">
-            <p>Nenhum material encontrado com os filtros selecionados.</p>
+        {filteredMaterials.length === 0 && (
+          <div className="text-center py-16">
+            <div className="mb-4">
+              <Search className="h-16 w-16 mx-auto text-muted-foreground/50" />
+            </div>
+            <h3 className="text-xl font-medium mb-2">Nenhum material encontrado</h3>
+            <p className="text-muted-foreground mb-6">
+              Tente ajustar sua busca ou remover alguns filtros
+            </p>
+            <Button 
+              variant="outline"
+              onClick={() => {
+                setSearchTerm('');
+                activeFilters.forEach(filter => toggleFilter(filter));
+              }}
+            >
+              Limpar todos os filtros
+            </Button>
           </div>
         )}
       </section>

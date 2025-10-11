@@ -82,6 +82,9 @@ export default function MateriaLab() {
           <Logo onClick={() => navigate('/')} className="flex-shrink-0" />
           
           <nav className="hidden md:flex items-center gap-6 text-sm">
+            <button className="hover:text-muted-foreground transition" onClick={() => navigate('/materials')}>
+              Materiais
+            </button>
             <button className="hover:text-muted-foreground transition" onClick={() => navigate('/collections')}>
               Coleções
             </button>
@@ -153,6 +156,9 @@ export default function MateriaLab() {
             className="md:hidden border-t border-border bg-background p-4"
           >
             <nav className="flex flex-col gap-3">
+              <button className="text-left hover:text-muted-foreground" onClick={() => navigate('/materials')}>
+                Materiais
+              </button>
               <button className="text-left hover:text-muted-foreground" onClick={() => navigate('/collections')}>
                 Coleções
               </button>
