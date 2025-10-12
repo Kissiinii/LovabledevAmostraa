@@ -19,8 +19,7 @@ export const Logo: React.FC<LogoProps> = ({
   const animationProps = animated ? {
     initial: { opacity: 0, y: -10 },
     animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.5 },
-    whileHover: { scale: 1.05 }
+    transition: { duration: 0.5 }
   } : {};
 
   if (variant === "icon") {

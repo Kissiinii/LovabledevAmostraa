@@ -106,10 +106,10 @@ export default function Login() {
             animate={{ opacity: 1, x: 0 }}
             className="flex flex-col justify-center max-w-md mx-auto lg:mx-0 lg:ml-auto w-full"
           >
-            <h1 className="text-4xl font-bold tracking-tight mb-2">
-              Bem-vindo ao
-            </h1>
-            <div className="mb-4">
+            <div className="flex items-center gap-3 mb-2">
+              <h1 className="text-4xl font-bold tracking-tight">
+                Bem-vindo a
+              </h1>
               <Logo variant="full" animated={false} />
             </div>
             <p className="text-muted-foreground text-lg mb-8">
