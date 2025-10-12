@@ -106,8 +106,11 @@ export default function Login() {
             animate={{ opacity: 1, x: 0 }}
             className="flex flex-col justify-center max-w-md mx-auto lg:mx-0 lg:ml-auto w-full"
           >
-            <div className="mb-6">
-              <Logo variant="full" animated={false} className="mb-4" />
+            <h1 className="text-4xl font-bold tracking-tight mb-2">
+              Bem-vindo ao
+            </h1>
+            <div className="mb-4">
+              <Logo variant="full" animated={false} />
             </div>
             <p className="text-muted-foreground text-lg mb-8">
               Sua plataforma de materiais de design
