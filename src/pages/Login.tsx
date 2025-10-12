@@ -6,6 +6,7 @@ import { Mail, Lock, ArrowLeft } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
+import { Logo } from "@/components/Logo";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -91,9 +92,8 @@ export default function Login() {
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Minimal Header */}
       <header className="absolute top-0 left-0 right-0 z-40 px-8 py-6">
-        <Link to="/" className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-xl bg-primary text-primary-foreground grid place-items-center font-semibold">M</div>
-          <span className="font-semibold tracking-tight">MateriaLab</span>
+        <Link to="/">
+          <Logo variant="full" animated={false} />
         </Link>
       </header>
 
@@ -106,9 +106,9 @@ export default function Login() {
             animate={{ opacity: 1, x: 0 }}
             className="flex flex-col justify-center max-w-md mx-auto lg:mx-0 lg:ml-auto w-full"
           >
-            <h1 className="text-4xl font-bold tracking-tight mb-2">
-              Bem-vindo ao MateriaLab
-            </h1>
+            <div className="mb-6">
+              <Logo variant="full" animated={false} className="mb-4" />
+            </div>
             <p className="text-muted-foreground text-lg mb-8">
               Sua plataforma de materiais de design
             </p>
@@ -157,7 +157,7 @@ export default function Login() {
               />
               <Button 
                 type="submit" 
-                className="w-full rounded-xl h-12"
+                className="w-full rounded-xl h-12 bg-amostra-orange hover:bg-amostra-orange/90 text-white"
                 disabled={loading}
               >
                 {loading ? "Entrando..." : "Continuar com email"}
