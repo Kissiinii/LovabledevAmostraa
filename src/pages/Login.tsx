@@ -107,7 +107,7 @@ export default function Login() {
             className="flex flex-col justify-center max-w-md mx-auto lg:mx-0 lg:ml-auto w-full"
           >
             <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-4xl font-bold tracking-tight">
+              <h1 className="text-4xl font-bold tracking-tight text-muted-foreground">
                 Bem-vindo a
               </h1>
               <Logo variant="full" animated={false} />

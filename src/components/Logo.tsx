@@ -14,45 +14,35 @@ export const Logo: React.FC<LogoProps> = ({
   onClick,
   animated = true 
 }) => {
-  const MotionDiv = animated ? motion.div : "div";
-  
-  const animationProps = animated ? {
-    initial: { opacity: 0, y: -10 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.5 }
-  } : {};
-
   if (variant === "icon") {
     return (
-      <MotionDiv
-        {...animationProps}
+      <div
         className={`logo-container cursor-pointer ${className}`}
         onClick={onClick}
       >
         <img 
           src="/amostra-icon.png" 
           alt="Amostra" 
-          className="h-8 w-8 sm:h-10 sm:w-10 object-contain transition-all duration-200"
+          className="h-8 w-8 sm:h-10 sm:w-10 object-contain"
           loading="eager"
         />
-      </MotionDiv>
+      </div>
     );
   }
 
   return (
-    <MotionDiv
-      {...animationProps}
+    <div
       className={`logo-container cursor-pointer ${className}`}
       onClick={onClick}
     >
       <img 
         src="/amostra-logo.png" 
         alt="Amostra - Plataforma de Materiais" 
-        className="h-8 sm:h-10 object-contain transition-all duration-200"
+        className="h-8 sm:h-10 object-contain"
         style={{ maxWidth: "160px" }}
         loading="eager"
       />
-    </MotionDiv>
+    </div>
   );
 };
 
