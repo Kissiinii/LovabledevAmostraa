@@ -8,6 +8,7 @@ import { ChevronRight, Search, Leaf, Ruler, Truck, Star, Menu, X } from "lucide-
 import { MaterialCard } from "@/components/MaterialCard";
 import { FilterButton } from "@/components/FilterButton";
 import { SampleKitPopup } from "@/components/SampleKitPopup";
+import { BrandCarousel } from "@/components/BrandCarousel";
 import { useMaterialSearch } from "@/hooks/useMaterialSearch";
 import { Logo } from "@/components/Logo";
 import { materials, collections, filterOptions } from "@/data/materials";
@@ -278,8 +279,11 @@ export default function MateriaLab() {
         </div>
       </section>
 
+      {/* Brand Carousel */}
+      <BrandCarousel />
+
       {/* Featured Materials Section */}
-      <section className="mx-auto max-w-7xl px-4 pb-8">
+      <section className="mx-auto max-w-7xl px-4 pb-8 pt-12">
         <div className="text-center mb-8">
           <h2 className="text-2xl font-semibold tracking-tight mb-2">Materiais em destaque</h2>
           <p className="text-muted-foreground">Seleção especial dos nossos materiais mais procurados</p>
