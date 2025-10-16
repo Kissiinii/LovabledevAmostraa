@@ -1,60 +1,168 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Mail, Lock, ArrowLeft } from "lucide-react";
+import { Mail, Lock, ArrowLeft, User } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { Logo } from "@/components/Logo";
+import { z } from "zod";
+import type { Session, User as SupabaseUser } from "@supabase/supabase-js";
+
+// Schema de validação
+const loginSchema = z.object({
+  email: z.string().trim().email({ message: "Email inválido" }),
+  password: z.string().min(6, { message: "Senha deve ter no mínimo 6 caracteres" }),
+});
+
+const signupSchema = z.object({
+  fullName: z.string().trim().min(2, { message: "Nome deve ter no mínimo 2 caracteres" }).max(100),
+  email: z.string().trim().email({ message: "Email inválido" }),
+  password: z.string().min(6, { message: "Senha deve ter no mínimo 6 caracteres" }),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "As senhas não coincidem",
+  path: ["confirmPassword"],
+});
 
 export default function Login() {
+  const [isSignup, setIsSignup] = useState(false);
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
   const navigate = useNavigate();
+
+  // Verificar se usuário já está autenticado
+  useEffect(() => {
+    // Setup auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, currentSession) => {
+        setSession(currentSession);
+        setUser(currentSession?.user ?? null);
+        
+        // Redirecionar usuário autenticado para a home
+        if (currentSession?.user) {
+          navigate("/");
+        }
+      }
+    );
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+      setSession(currentSession);
+      setUser(currentSession?.user ?? null);
+      
+      if (currentSession?.user) {
+        navigate("/");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!supabase) {
-      toast({
-        title: "Supabase não configurado",
-        description: "Configure a integração Supabase para usar o login.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if (!email || !password) {
-      toast({
-        title: "Campos obrigatórios",
-        description: "Preencha email e senha para continuar.",
-        variant: "destructive"
-      });
-      return;
-    }
-
     setLoading(true);
+
     try {
+      // Validar dados
+      const validatedData = loginSchema.parse({ email, password });
+
       const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+        email: validatedData.email,
+        password: validatedData.password,
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message.includes("Invalid login credentials")) {
+          throw new Error("Email ou senha incorretos");
+        }
+        throw error;
+      }
 
       toast({
         title: "Login realizado!",
-        description: "Bem-vindo ao MateriaLab.",
+        description: "Bem-vindo de volta à Amostra.",
       });
-      navigate("/");
     } catch (error: any) {
-      toast({
-        title: "Erro no login",
-        description: error.message || "Verifique suas credenciais.",
-        variant: "destructive"
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Erro de validação",
+          description: error.issues[0].message,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Erro no login",
+          description: error.message || "Verifique suas credenciais.",
+          variant: "destructive"
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      // Validar dados
+      const validatedData = signupSchema.parse({ 
+        fullName, 
+        email, 
+        password, 
+        confirmPassword 
       });
+
+      const { error } = await supabase.auth.signUp({
+        email: validatedData.email,
+        password: validatedData.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            full_name: validatedData.fullName,
+          }
+        }
+      });
+
+      if (error) {
+        if (error.message.includes("already registered")) {
+          throw new Error("Este email já está cadastrado");
+        }
+        throw error;
+      }
+
+      toast({
+        title: "Conta criada com sucesso!",
+        description: "Bem-vindo à Amostra. Você já pode começar a usar a plataforma.",
+      });
+      
+      // Limpar formulário
+      setFullName("");
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+    } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Erro de validação",
+          description: error.issues[0].message,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Erro no cadastro",
+          description: error.message || "Tente novamente mais tarde.",
+          variant: "destructive"
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -108,12 +216,14 @@ export default function Login() {
           >
             <div className="flex items-center gap-3 mb-2">
               <h1 className="text-4xl font-bold tracking-tight text-muted-foreground">
-                Bem-vindo a
+                {isSignup ? "Crie sua conta" : "Bem-vindo a"}
               </h1>
-              <Logo variant="full" animated={false} />
+              {!isSignup && <Logo variant="full" animated={false} />}
             </div>
             <p className="text-muted-foreground text-lg mb-8">
-              Sua plataforma de materiais de design
+              {isSignup 
+                ? "Comece a explorar materiais de design" 
+                : "Sua plataforma de materiais de design"}
             </p>
             
             {/* Social login first */}
@@ -141,7 +251,17 @@ export default function Login() {
             </div>
 
             {/* Email/Password form */}
-            <form className="space-y-4" onSubmit={handleEmailLogin}>
+            <form className="space-y-4" onSubmit={isSignup ? handleSignup : handleEmailLogin}>
+              {isSignup && (
+                <Input 
+                  type="text" 
+                  placeholder="Nome completo" 
+                  className="h-12 rounded-xl" 
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  required
+                />
+              )}
               <Input 
                 type="email" 
                 placeholder="seuemail@exemplo.com" 
@@ -158,12 +278,24 @@ export default function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+              {isSignup && (
+                <Input 
+                  type="password" 
+                  placeholder="Confirmar senha" 
+                  className="h-12 rounded-xl" 
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                />
+              )}
               <Button 
                 type="submit" 
                 className="w-full rounded-xl h-12 bg-amostra-orange hover:bg-amostra-orange/90 text-white"
                 disabled={loading}
               >
-                {loading ? "Entrando..." : "Continuar com email"}
+                {loading 
+                  ? (isSignup ? "Criando conta..." : "Entrando...") 
+                  : (isSignup ? "Criar conta" : "Continuar com email")}
               </Button>
             </form>
 
@@ -174,18 +306,35 @@ export default function Login() {
               <button className="underline hover:text-foreground">Política de Cookies</button>
             </p>
 
-            {/* Sign up link */}
+            {/* Toggle between login and signup */}
             <div className="mt-6 text-center text-sm">
-              Não tem conta?{" "}
-              <button 
-                className="text-primary hover:underline font-medium"
-                onClick={() => toast({
-                  title: "Registro",
-                  description: "Funcionalidade de registro será implementada em breve.",
-                })}
-              >
-                Criar conta
-              </button>
+              {isSignup ? (
+                <>
+                  Já tem uma conta?{" "}
+                  <button 
+                    type="button"
+                    className="text-primary hover:underline font-medium"
+                    onClick={() => {
+                      setIsSignup(false);
+                      setFullName("");
+                      setConfirmPassword("");
+                    }}
+                  >
+                    Fazer login
+                  </button>
+                </>
+              ) : (
+                <>
+                  Não tem conta?{" "}
+                  <button 
+                    type="button"
+                    className="text-primary hover:underline font-medium"
+                    onClick={() => setIsSignup(true)}
+                  >
+                    Criar conta
+                  </button>
+                </>
+              )}
             </div>
           </motion.div>
 
