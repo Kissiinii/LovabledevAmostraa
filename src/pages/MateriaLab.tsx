@@ -11,6 +11,7 @@ import { SampleKitPopup } from "@/components/SampleKitPopup";
 import { BrandCarousel } from "@/components/BrandCarousel";
 import { useMaterialSearch } from "@/hooks/useMaterialSearch";
 import { Logo } from "@/components/Logo";
+import { UserMenu } from "@/components/UserMenu";
 import { materials, collections, filterOptions } from "@/data/materials";
 import { toast } from "@/hooks/use-toast";
 
@@ -134,9 +135,7 @@ export default function MateriaLab() {
               />
             </div>
             
-            <Button className="rounded-2xl bg-orange-500 hover:bg-orange-600" onClick={() => navigate('/login')}>
-              Entrar
-            </Button>
+            <UserMenu />
             
             <Button 
               variant="ghost" 
