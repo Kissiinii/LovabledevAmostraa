@@ -36,6 +36,8 @@ export const SampleKitPopup = ({
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
+        // Salvar amostras no localStorage antes de redirecionar para login
+        localStorage.setItem('pending_cart_items', JSON.stringify(samples));
         toast({
           title: "Login necessário",
           description: "Faça login para continuar com o pedido.",

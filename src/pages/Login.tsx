@@ -37,28 +37,79 @@ export default function Login() {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const navigate = useNavigate();
 
-  // Verificar se usuário já está autenticado
+  // Verificar se usuário já está autenticado e processar itens pendentes
   useEffect(() => {
+    const processPendingCartItems = async (userId: string) => {
+      const pendingItems = localStorage.getItem('pending_cart_items');
+      if (pendingItems) {
+        try {
+          const samples = JSON.parse(pendingItems);
+          
+          // Salvar cada amostra no banco de dados
+          for (const sample of samples) {
+            const { data: existing } = await supabase
+              .from('cart_items')
+              .select('id, quantity')
+              .eq('user_id', userId)
+              .eq('material_code', sample.code)
+              .maybeSingle();
+
+            if (existing) {
+              await supabase
+                .from('cart_items')
+                .update({ quantity: existing.quantity + 1 })
+                .eq('id', existing.id);
+            } else {
+              await supabase
+                .from('cart_items')
+                .insert({
+                  user_id: userId,
+                  material_name: sample.name,
+                  material_code: sample.code,
+                  texture: sample.texture,
+                  quantity: 1
+                });
+            }
+          }
+          
+          // Limpar localStorage e redirecionar para o carrinho
+          localStorage.removeItem('pending_cart_items');
+          navigate('/pre-selling');
+          return true;
+        } catch (error) {
+          console.error('Erro ao processar itens pendentes:', error);
+          localStorage.removeItem('pending_cart_items');
+        }
+      }
+      return false;
+    };
+
     // Setup auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, currentSession) => {
+      async (event, currentSession) => {
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         
-        // Redirecionar usuário autenticado para a home
+        // Processar itens pendentes ou redirecionar para a home
         if (currentSession?.user) {
-          navigate("/");
+          const hadPendingItems = await processPendingCartItems(currentSession.user.id);
+          if (!hadPendingItems) {
+            navigate("/");
+          }
         }
       }
     );
 
     // Check for existing session
-    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+    supabase.auth.getSession().then(async ({ data: { session: currentSession } }) => {
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
       
       if (currentSession?.user) {
-        navigate("/");
+        const hadPendingItems = await processPendingCartItems(currentSession.user.id);
+        if (!hadPendingItems) {
+          navigate("/");
+        }
       }
     });
 

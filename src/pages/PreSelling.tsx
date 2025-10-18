@@ -20,9 +20,31 @@ export default function PreSelling() {
   const [deliveryInfo, setDeliveryInfo] = useState<{ days: string; price: string } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load cart items from database
+  // Load cart items from database and process pending items
   useEffect(() => {
-    loadCartItems();
+    const initializeCart = async () => {
+      await loadCartItems();
+      
+      // Processar itens pendentes do localStorage se existirem
+      const pendingItems = localStorage.getItem('pending_cart_items');
+      if (pendingItems) {
+        try {
+          const samples = JSON.parse(pendingItems);
+          await saveNewItems(samples);
+          localStorage.removeItem('pending_cart_items');
+          
+          toast({
+            title: "Amostras adicionadas!",
+            description: "Suas amostras foram adicionadas ao carrinho.",
+          });
+        } catch (error) {
+          console.error('Erro ao processar itens pendentes:', error);
+          localStorage.removeItem('pending_cart_items');
+        }
+      }
+    };
+    
+    initializeCart();
   }, []);
 
   // Save new items from navigation state
