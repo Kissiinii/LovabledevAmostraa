@@ -122,7 +122,7 @@ export default function Materials() {
             Catálogo de Materiais
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Explore nossa biblioteca completa com {materials.length} materiais de alta qualidade para seus projetos
+            Explore nossa biblioteca completa com mais de 130 materiais de alta qualidade para seus projetos
           </p>
         </div>
 

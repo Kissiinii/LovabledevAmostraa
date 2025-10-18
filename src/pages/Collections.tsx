@@ -1,71 +1,16 @@
-import React, { useState, useRef } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Search, ChevronLeft, Filter } from "lucide-react";
-import { MaterialCard } from "@/components/MaterialCard";
-import { FilterButton } from "@/components/FilterButton";
-import { SampleKitPopup } from "@/components/SampleKitPopup";
-import { useMaterialSearch } from "@/hooks/useMaterialSearch";
+import { ChevronLeft } from "lucide-react";
 import { Logo } from "@/components/Logo";
-import { materials, collections, filterOptions } from "@/data/materials";
+import { UserMenu } from "@/components/UserMenu";
+import { collections } from "@/data/materials";
 import { toast } from "@/hooks/use-toast";
 
 export default function Collections() {
   const navigate = useNavigate();
-  const [requestedSamples, setRequestedSamples] = useState<Array<{ name: string; code: string; texture?: string }>>([]);
-  const [selectedCollection, setSelectedCollection] = useState<number | null>(null);
-  const [isKitPopupOpen, setIsKitPopupOpen] = useState(false);
-  const kitButtonRef = useRef<HTMLButtonElement>(null);
-
-  const {
-    searchTerm,
-    setSearchTerm,
-    activeFilters,
-    toggleFilter,
-    filteredMaterials,
-  } = useMaterialSearch(materials);
-
-  const handleSampleRequest = (material: { name: string; code: string; texture?: string }) => {
-    if (!requestedSamples.find(s => s.code === material.code)) {
-      setRequestedSamples(prev => [...prev, material]);
-    }
-  };
-
-  const handleRemoveSample = (code: string) => {
-    setRequestedSamples(prev => prev.filter(s => s.code !== code));
-  };
-
-  const handleRequestKit = () => {
-    toast({
-      title: "Kit solicitado com sucesso!",
-      description: `Seu kit com ${requestedSamples.length} amostras será enviado em breve.`,
-    });
-    setRequestedSamples([]);
-    setIsKitPopupOpen(false);
-  };
-
-  const handleSearch = () => {
-    if (!searchTerm.trim()) {
-      toast({
-        title: "Digite algo para buscar",
-        description: "Informe o nome ou código do material que você procura.",
-        variant: "destructive"
-      });
-      return;
-    }
-    toast({
-      title: "Buscando materiais",
-      description: `Encontrados ${filteredMaterials.length} resultados para "${searchTerm}"`,
-    });
-  };
-
-  const selectedCollectionData = collections.find(c => c.id === selectedCollection);
-  const displayMaterials = selectedCollection 
-    ? selectedCollectionData?.materials || []
-    : filteredMaterials;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -85,49 +30,14 @@ export default function Collections() {
             </nav>
           </div>
           
-          <div className="flex items-center gap-2">
-            <Input 
-              className="w-56" 
-              placeholder="Buscar materiais" 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            />
-            <Button variant="secondary" className="gap-2" onClick={handleSearch}>
-              <Search className="h-4 w-4"/>Buscar
-            </Button>
-            
-            {requestedSamples.length > 0 && (
-              <div className="relative">
-                <Button 
-                  ref={kitButtonRef}
-                  variant="outline" 
-                  className="gap-2"
-                  onClick={() => setIsKitPopupOpen(!isKitPopupOpen)}
-                >
-                  Kit ({requestedSamples.length})
-                </Button>
-                <SampleKitPopup
-                  samples={requestedSamples}
-                  isOpen={isKitPopupOpen}
-                  onClose={() => setIsKitPopupOpen(false)}
-                  onRemoveSample={handleRemoveSample}
-                  onRequestKit={handleRequestKit}
-                />
-              </div>
-            )}
-            
-            <Button className="rounded-2xl bg-orange-500 hover:bg-orange-600" onClick={() => navigate('/login')}>
-              Entrar
-            </Button>
-          </div>
+          <UserMenu />
         </div>
       </header>
 
       {/* Hero Section */}
       <section className="mx-auto max-w-7xl px-4 py-12">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-semibold tracking-tight mb-4">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-semibold tracking-tight mb-4">
             Explore nossas coleções
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -135,38 +45,46 @@ export default function Collections() {
           </p>
         </div>
 
-        {/* Collection Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
+        {/* Collection Cards Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {collections.map((collection) => (
-            <motion.div key={collection.id} whileHover={{ scale: 1.02 }}>
+            <motion.div 
+              key={collection.id} 
+              whileHover={{ scale: 1.02 }}
+              className="h-full"
+            >
               <Card 
-                className={`rounded-3xl shadow-sm border-border cursor-pointer transition-all ${
-                  selectedCollection === collection.id ? 'ring-2 ring-primary' : ''
-                }`}
-                onClick={() => setSelectedCollection(selectedCollection === collection.id ? null : collection.id)}
+                className="rounded-3xl shadow-sm border-border h-full flex flex-col cursor-pointer transition-all hover:shadow-lg"
+                onClick={() => {
+                  toast({
+                    title: collection.title,
+                    description: `${collection.materialCount} materiais disponíveis nesta coleção.`,
+                  });
+                  navigate('/materials');
+                }}
               >
                 <CardHeader>
-                  <CardTitle className="text-lg">{collection.title}</CardTitle>
+                  <CardTitle className="text-xl">{collection.title}</CardTitle>
                   <p className="text-sm text-muted-foreground">{collection.description}</p>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex-1 flex flex-col">
                   <div className="grid grid-cols-3 gap-2 mb-4">
                     {collection.materials.slice(0, 6).map((material, i) => (
                       <div 
                         key={i} 
-                        className="h-20 rounded-xl border border-border bg-cover bg-center"
+                        className="aspect-square rounded-xl border border-border bg-cover bg-center"
                         style={{ backgroundImage: `url(${material.texture})` }}
                       />
                     ))}
                   </div>
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
+                  <div className="flex items-center justify-between text-sm text-muted-foreground mt-auto pt-4">
                     <span>{collection.materialCount} materiais</span>
                     <Button 
-                      variant={selectedCollection === collection.id ? "default" : "secondary"}
+                      variant="secondary"
                       size="sm" 
                       className="rounded-xl"
                     >
-                      {selectedCollection === collection.id ? "Selecionado" : "Explorar"}
+                      Ver coleção
                     </Button>
                   </div>
                 </CardContent>
@@ -174,70 +92,6 @@ export default function Collections() {
             </motion.div>
           ))}
         </div>
-
-        {/* Search Bar */}
-        <div className="mb-8 max-w-2xl mx-auto">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input 
-              className="pl-10 h-12 text-base rounded-2xl" 
-              placeholder="Buscar por nome, código ou categoria..." 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            />
-          </div>
-        </div>
-
-        {/* Filters */}
-        <div className="mb-8">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4" />
-              <span className="font-medium">Filtrar por:</span>
-            </div>
-            <span className="text-sm text-muted-foreground">
-              {activeFilters.length > 0 ? `${activeFilters.length} filtro(s) ativo(s)` : 'Nenhum filtro aplicado'}
-            </span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {filterOptions.map((filter) => (
-              <FilterButton
-                key={filter}
-                label={filter}
-                isActive={activeFilters.includes(filter)}
-                onClick={() => toggleFilter(filter)}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Selected Collection Header */}
-        {selectedCollection && (
-          <div className="mb-6 p-4 rounded-2xl bg-accent/10 border border-border">
-            <h2 className="text-xl font-medium">{selectedCollectionData?.title}</h2>
-            <p className="text-muted-foreground">{selectedCollectionData?.description}</p>
-          </div>
-        )}
-
-        {/* Materials Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {displayMaterials.map((material) => (
-            <MaterialCard
-              key={material.code}
-              name={material.name}
-              code={material.code}
-              texture={material.texture}
-              onSampleRequest={handleSampleRequest}
-            />
-          ))}
-        </div>
-
-        {displayMaterials.length === 0 && (
-          <div className="text-center py-12 text-muted-foreground">
-            <p>Nenhum material encontrado com os filtros selecionados.</p>
-          </div>
-        )}
       </section>
     </div>
   );

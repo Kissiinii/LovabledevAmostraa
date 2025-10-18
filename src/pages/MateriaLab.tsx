@@ -256,8 +256,8 @@ export default function MateriaLab() {
                       initial={{ x: row ? 0 : -200 }}
                       animate={{ x: row ? [-200, 0] : [0, -200] }}
                       transition={{ duration: 16, repeat: Infinity, ease: "linear" }}
-                    >
-                       {materials.concat(materials).map((material, i) => (
+                     >
+                       {materials.slice(36, 72).concat(materials.slice(36, 72)).map((material, i) => (
                         <div key={`${row}-${i}`} className="w-40 h-40 rounded-2xl border border-border overflow-hidden shadow-sm bg-card">
                           <div 
                             className="h-3/4 bg-cover bg-center"
