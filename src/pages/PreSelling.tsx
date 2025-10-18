@@ -1,50 +1,208 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ChevronLeft, Package, Truck, CheckCircle, Plus, Minus, MapPin } from "lucide-react";
+import { ChevronLeft, Package, Truck, CheckCircle, Plus, Minus, MapPin, X } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function PreSelling() {
   const navigate = useNavigate();
   const location = useLocation();
   const selectedItems = location.state?.selectedItems || [];
   
-  const [cartItems, setCartItems] = useState(
-    selectedItems?.length > 0 
-      ? selectedItems.map((item: any) => ({ ...item, quantity: 1 }))
-      : []
-  );
+  const [cartItems, setCartItems] = useState<any[]>([]);
   const [cep, setCep] = useState("");
   const [deliveryInfo, setDeliveryInfo] = useState<{ days: string; price: string } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleQuantityChange = (index: number, change: number) => {
-    setCartItems(prev => 
-      prev.map((item, i) => 
-        i === index 
-          ? { ...item, quantity: Math.max(1, item.quantity + change) }
-          : item
-      )
-    );
+  // Load cart items from database
+  useEffect(() => {
+    loadCartItems();
+  }, []);
+
+  // Save new items from navigation state
+  useEffect(() => {
+    if (selectedItems.length > 0) {
+      saveNewItems(selectedItems);
+    }
+  }, [selectedItems]);
+
+  const loadCartItems = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setIsLoading(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('cart_items')
+        .select('*')
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      if (data) {
+        setCartItems(data.map(item => ({
+          id: item.id,
+          name: item.material_name,
+          code: item.material_code,
+          texture: item.texture,
+          quantity: item.quantity
+        })));
+      }
+    } catch (error) {
+      console.error('Erro ao carregar carrinho:', error);
+      toast({
+        title: "Erro ao carregar carrinho",
+        description: "Não foi possível carregar seus itens.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleAddComplementaryItem = (item: any) => {
-    setCartItems(prev => {
-      const existingIndex = prev.findIndex(existingItem => existingItem.code === item.code);
-      if (existingIndex >= 0) {
-        return prev.map((cartItem, i) => 
-          i === existingIndex 
-            ? { ...cartItem, quantity: cartItem.quantity + 1 }
-            : cartItem
-        );
-      } else {
-        return [...prev, { ...item, quantity: 1 }];
+  const saveNewItems = async (items: any[]) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      for (const item of items) {
+        // Check if item already exists
+        const { data: existing } = await supabase
+          .from('cart_items')
+          .select('id, quantity')
+          .eq('user_id', user.id)
+          .eq('material_code', item.code)
+          .maybeSingle();
+
+        if (existing) {
+          // Update quantity
+          await supabase
+            .from('cart_items')
+            .update({ quantity: existing.quantity + 1 })
+            .eq('id', existing.id);
+        } else {
+          // Insert new item
+          await supabase
+            .from('cart_items')
+            .insert({
+              user_id: user.id,
+              material_name: item.name,
+              material_code: item.code,
+              texture: item.texture,
+              quantity: 1
+            });
+        }
       }
-    });
+
+      await loadCartItems();
+    } catch (error) {
+      console.error('Erro ao salvar itens:', error);
+    }
+  };
+
+  const handleQuantityChange = async (index: number, change: number) => {
+    const item = cartItems[index];
+    const newQuantity = Math.max(1, item.quantity + change);
+
+    try {
+      const { error } = await supabase
+        .from('cart_items')
+        .update({ quantity: newQuantity })
+        .eq('id', item.id);
+
+      if (error) throw error;
+
+      setCartItems(prev => 
+        prev.map((cartItem, i) => 
+          i === index 
+            ? { ...cartItem, quantity: newQuantity }
+            : cartItem
+        )
+      );
+    } catch (error) {
+      console.error('Erro ao atualizar quantidade:', error);
+      toast({
+        title: "Erro ao atualizar",
+        description: "Não foi possível atualizar a quantidade.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleRemoveItem = async (index: number) => {
+    const item = cartItems[index];
+
+    try {
+      const { error } = await supabase
+        .from('cart_items')
+        .delete()
+        .eq('id', item.id);
+
+      if (error) throw error;
+
+      setCartItems(prev => prev.filter((_, i) => i !== index));
+      
+      toast({
+        title: "Item removido",
+        description: "O item foi removido do carrinho.",
+      });
+    } catch (error) {
+      console.error('Erro ao remover item:', error);
+      toast({
+        title: "Erro ao remover",
+        description: "Não foi possível remover o item.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleAddComplementaryItem = async (item: any) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const existingIndex = cartItems.findIndex(existingItem => existingItem.code === item.code);
+      
+      if (existingIndex >= 0) {
+        const existingItem = cartItems[existingIndex];
+        await supabase
+          .from('cart_items')
+          .update({ quantity: existingItem.quantity + 1 })
+          .eq('id', existingItem.id);
+      } else {
+        await supabase
+          .from('cart_items')
+          .insert({
+            user_id: user.id,
+            material_name: item.name,
+            material_code: item.code,
+            texture: item.texture,
+            quantity: 1
+          });
+      }
+
+      await loadCartItems();
+      
+      toast({
+        title: "Item adicionado",
+        description: "O item foi adicionado ao carrinho.",
+      });
+    } catch (error) {
+      console.error('Erro ao adicionar item:', error);
+      toast({
+        title: "Erro ao adicionar",
+        description: "Não foi possível adicionar o item.",
+        variant: "destructive"
+      });
+    }
   };
 
   const calculateDelivery = () => {
@@ -126,7 +284,12 @@ export default function PreSelling() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {cartItems.length === 0 ? (
+                  {isLoading ? (
+                    <div className="text-center py-8">
+                      <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
+                      <p className="text-muted-foreground">Carregando carrinho...</p>
+                    </div>
+                  ) : cartItems.length === 0 ? (
                     <div className="text-center py-8">
                       <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                       <p className="text-muted-foreground">Nenhuma amostra selecionada</p>
@@ -140,8 +303,8 @@ export default function PreSelling() {
                     </div>
                   ) : (
                     cartItems.map((item: any, index: number) => (
-                      <div key={index} className="flex items-center justify-between p-4 border border-border rounded-2xl">
-                        <div className="flex items-center gap-4">
+                      <div key={item.id || index} className="flex items-center justify-between p-4 border border-border rounded-2xl">
+                        <div className="flex items-center gap-4 flex-1">
                           {item.texture && (
                             <img 
                               src={item.texture} 
@@ -174,6 +337,15 @@ export default function PreSelling() {
                             onClick={() => handleQuantityChange(index, 1)}
                           >
                             <Plus className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 rounded-lg text-destructive"
+                            onClick={() => handleRemoveItem(index)}
+                          >
+                            <X className="h-4 w-4" />
                           </Button>
                         </div>
                       </div>

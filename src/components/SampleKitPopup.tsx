@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { X, Download } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 interface Sample {
   name: string;
@@ -29,9 +31,57 @@ export const SampleKitPopup = ({
   
   if (!isOpen) return null;
 
-  const handleRequestKit = () => {
-    navigate('/pre-selling', { state: { selectedItems: samples } });
-    onRequestKit();
+  const handleRequestKit = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          title: "Login necessário",
+          description: "Faça login para continuar com o pedido.",
+          variant: "destructive"
+        });
+        navigate('/login');
+        return;
+      }
+
+      // Save samples to database
+      for (const sample of samples) {
+        const { data: existing } = await supabase
+          .from('cart_items')
+          .select('id, quantity')
+          .eq('user_id', user.id)
+          .eq('material_code', sample.code)
+          .maybeSingle();
+
+        if (existing) {
+          await supabase
+            .from('cart_items')
+            .update({ quantity: existing.quantity + 1 })
+            .eq('id', existing.id);
+        } else {
+          await supabase
+            .from('cart_items')
+            .insert({
+              user_id: user.id,
+              material_name: sample.name,
+              material_code: sample.code,
+              texture: sample.texture,
+              quantity: 1
+            });
+        }
+      }
+
+      navigate('/pre-selling');
+      onRequestKit();
+    } catch (error) {
+      console.error('Erro ao salvar amostras:', error);
+      toast({
+        title: "Erro ao salvar",
+        description: "Não foi possível salvar as amostras.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
